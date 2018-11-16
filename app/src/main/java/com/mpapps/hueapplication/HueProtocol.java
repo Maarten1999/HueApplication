@@ -26,7 +26,9 @@ public class HueProtocol
             return null;
         }
     }
-    public static JSONObject setLight(boolean state, int brightness, int hue, int saturation, double x, double y){
+
+    public static JSONObject setLight(boolean state, int brightness, int hue, int saturation, double x, double y)
+    {
         JSONObject json = new JSONObject();
         try {
             json.put("on", state);
@@ -37,6 +39,20 @@ public class HueProtocol
             xy.put(x);
             xy.put(y);
             json.put("xy", xy);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    public static JSONObject setLight(boolean state, int brightness, int hue, int saturation)
+    {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("on", state);
+            json.put("bri", brightness);
+            json.put("hue", hue);
+            json.put("sat", saturation);
         } catch (JSONException e) {
             e.printStackTrace();
         }

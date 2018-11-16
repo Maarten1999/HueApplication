@@ -13,7 +13,6 @@ import java.util.List;
 
 public class LightsAdapter extends RecyclerView.Adapter<LightsAdapter.ViewHolder>
 {
-
     private Context context;
     private List<HueLight> lights;
 
