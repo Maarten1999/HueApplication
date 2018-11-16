@@ -1,9 +1,17 @@
-package com.mpapps.hueapplication;
+package com.mpapps.hueapplication.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.mpapps.hueapplication.LightManager;
+import com.mpapps.hueapplication.Adapters.LightsAdapter;
+import com.mpapps.hueapplication.Models.HueLight;
+import com.mpapps.hueapplication.R;
+import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.VolleyListener;
+import com.mpapps.hueapplication.Volley.VolleyService;
 
 import org.json.JSONArray;
 

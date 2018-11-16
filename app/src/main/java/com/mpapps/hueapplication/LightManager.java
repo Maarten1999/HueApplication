@@ -1,7 +1,6 @@
 package com.mpapps.hueapplication;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.mpapps.hueapplication.Models.HueLight;
 
 import java.util.ArrayList;
 import java.util.List;

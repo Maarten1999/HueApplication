@@ -1,4 +1,4 @@
-package com.mpapps.hueapplication;
+package com.mpapps.hueapplication.Models;
 
 public class HueLight
 {

@@ -1,4 +1,4 @@
-package com.mpapps.hueapplication;
+package com.mpapps.hueapplication.Volley;
 
 import com.android.volley.toolbox.JsonObjectRequest;
 

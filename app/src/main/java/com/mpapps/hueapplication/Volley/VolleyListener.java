@@ -1,7 +1,8 @@
-package com.mpapps.hueapplication;
+package com.mpapps.hueapplication.Volley;
+
+import com.mpapps.hueapplication.Models.HueLight;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 

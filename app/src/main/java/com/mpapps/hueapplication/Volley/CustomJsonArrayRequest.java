@@ -1,4 +1,4 @@
-package com.mpapps.hueapplication.JsonRequests;
+package com.mpapps.hueapplication.Volley;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
