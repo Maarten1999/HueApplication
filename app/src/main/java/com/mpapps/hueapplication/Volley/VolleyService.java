@@ -1,6 +1,7 @@
 package com.mpapps.hueapplication.Volley;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -26,6 +27,7 @@ public class VolleyService
     private RequestQueue requestQueue;
     private VolleyListener listener;
     public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94";
+    public static final String basicRequestUrlMaartenSchool = "http://145.49.21.167:80/api/93e934e1ac5531c48ebf7838af52e94";
 
     private VolleyService (Context context, VolleyListener listener){
         this.context = context;

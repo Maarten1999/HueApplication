@@ -1,6 +1,9 @@
 package com.mpapps.hueapplication.Models;
 
-public class HueLight
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class HueLight implements Parcelable
 {
     private int id;
     private boolean state;
@@ -18,6 +21,32 @@ public class HueLight
         this.hue = hue;
         this.saturation = saturation;
     }
+
+    protected HueLight(Parcel in)
+    {
+        id = in.readInt();
+        state = in.readByte() != 0;
+        brightness = in.readInt();
+        hue = in.readInt();
+        saturation = in.readInt();
+        x = in.readDouble();
+        y = in.readDouble();
+    }
+
+    public static final Creator<HueLight> CREATOR = new Creator<HueLight>()
+    {
+        @Override
+        public HueLight createFromParcel(Parcel in)
+        {
+            return new HueLight(in);
+        }
+
+        @Override
+        public HueLight[] newArray(int size)
+        {
+            return new HueLight[size];
+        }
+    };
 
     public boolean isState()
     {
@@ -78,4 +107,21 @@ public class HueLight
         this.y = y;
     }
 
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeInt(id);
+        dest.writeByte((byte) (state ? 1 : 0));
+        dest.writeInt(brightness);
+        dest.writeInt(hue);
+        dest.writeInt(saturation);
+        dest.writeDouble(x);
+        dest.writeDouble(y);
+    }
 }
