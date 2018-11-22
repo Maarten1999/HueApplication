@@ -1,5 +1,7 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -7,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Adapters.LightsAdapter;
+import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.Volley.HueProtocol;
@@ -14,10 +17,11 @@ import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener
+public class MainActivity extends AppCompatActivity implements VolleyListener, BridgeFragment.OnFragmentInteractionListener
 {
 
     private VolleyService volleyService;
@@ -38,6 +42,11 @@ public class MainActivity extends AppCompatActivity implements VolleyListener
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
         volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1,5000,1));
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        BridgeFragment bridgeFragment = BridgeFragment.newInstance(this);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.mainactivity_bridge_fragment, bridgeFragment).addToBackStack(null).commit();
+
     }
 
     @Override
@@ -48,6 +57,24 @@ public class MainActivity extends AppCompatActivity implements VolleyListener
 
     @Override
     public void PutLightsReceived(JSONArray response)
+    {
+        boolean succeeded = true;
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                if(response.getJSONObject(i).getString("success") == null )
+                {
+                    succeeded = false;
+                    //todo something with a new request.
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onFragmentInteraction(Bridge bridge)
     {
 
     }
