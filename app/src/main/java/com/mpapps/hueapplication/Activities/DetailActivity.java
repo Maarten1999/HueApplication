@@ -1,24 +1,34 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 
 public class DetailActivity extends AppCompatActivity {
-    ImageView lamp;
+    ImageView lightImage;
     SeekBar redSlider, greenSlider, blueSlider;
     TextView redValue, greenValue, blueValue;
+    HueLight light;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        lamp = findViewById(R.id.detailLampImage);
+        Intent intent = getIntent();
+        light = (HueLight) intent.getSerializableExtra("LAMP");
+
+        lightImage = findViewById(R.id.detailLampImage);
+
+        float[] hsv = new float[]{light.getHue(),light.getSaturation(), light.getBrightness()};
+        lightImage.setBackgroundColor(Color.HSVToColor(hsv));
 
         redSlider = findViewById(R.id.redSlider);
         greenSlider = findViewById(R.id.greenSlider);

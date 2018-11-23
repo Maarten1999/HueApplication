@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+        intent.putExtra("LAMP", manager.getLights().get(position));
         startActivity(intent);
     }
 }
