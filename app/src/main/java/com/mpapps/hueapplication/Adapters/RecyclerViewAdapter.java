@@ -5,6 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.mpapps.hueapplication.Models.HueLight;
@@ -31,10 +34,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new ViewHolder(view);
     }
 
-    // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
+        HueLight light = mData.get(position);
+        holder.lightname.setText(light.getId()+"");
+        holder.lightSwitch.setChecked(light.isState());
+        holder.brightness.setProgress(light.getBrightness());
     }
 
     // total number of rows
@@ -46,11 +51,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        Switch lightSwitch;
+        SeekBar brightness;
+        TextView lightname;
 
         ViewHolder(View itemView) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.blueValue);
+            lightname = itemView.findViewById(R.id.recycleview_item_textview);
+            brightness = itemView.findViewById(R.id.recycleview_item_seekBar);
+            lightSwitch = itemView.findViewById(R.id.recycleview_item_switch);
             itemView.setOnClickListener(this);
         }
 

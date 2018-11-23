@@ -23,7 +23,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         Intent intent = getIntent();
-        light = (HueLight) intent.getSerializableExtra("LAMP");
+        light = (HueLight) intent.getParcelableExtra("LAMP");
 
         lightImage = findViewById(R.id.detailLampImage);
 

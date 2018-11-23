@@ -25,11 +25,11 @@ import com.mpapps.hueapplication.Volley.VolleyService;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.ItemClickListener
-{
+public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.ItemClickListener {
 
     private VolleyService volleyService;
     private LightManager manager;
@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     //private DatabaseHandler database;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
@@ -48,9 +47,13 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
 
         //tests
-        volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
-        volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1,5000,1));
+        //volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
+//        volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1, 5000, 1));
 
+        ArrayList<HueLight> hueLights = new ArrayList<>();
+        hueLights.add(new HueLight(1, true, 4, 345, 2));
+
+        manager.setLights(hueLights);
         //recyclerview
         RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -61,19 +64,16 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void GetLightsReceived(List<HueLight> lights)
-    {
+    public void GetLightsReceived(List<HueLight> lights) {
         manager.setLights(lights);
     }
 
     @Override
-    public void PutLightsReceived(JSONArray response)
-    {
+    public void PutLightsReceived(JSONArray response) {
         boolean succeeded = true;
         for (int i = 0; i < response.length(); i++) {
             try {
-                if(response.getJSONObject(i).getString("success") == null )
-                {
+                if (response.getJSONObject(i).getString("success") == null) {
                     succeeded = false;
                     //todo something with a new request.
                 }
@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
                 e.printStackTrace();
             }
         }
-        if(!succeeded)
-            Toast.makeText(this,"Light Request not succeeded", Toast.LENGTH_SHORT).show();
+        if (!succeeded)
+            Toast.makeText(this, "Light Request not succeeded", Toast.LENGTH_SHORT).show();
     }
 
     @Override
