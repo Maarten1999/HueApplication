@@ -1,27 +1,42 @@
 package com.mpapps.hueapplication.Models;
 
-public class Bridge
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Bridge implements Parcelable
 {
-    private int ID;
     private String Name;
     private String IP;
+    private String Username;
 
-    public Bridge(int id, String name, String IP)
+    public Bridge(String name, String IP)
     {
-        ID = id;
         Name = name;
         this.IP = IP;
     }
 
-    public int getID()
+    protected Bridge(Parcel in)
     {
-        return ID;
+        Name = in.readString();
+        IP = in.readString();
+        Username = in.readString();
     }
 
-    public void setID(int ID)
+    public static final Creator<Bridge> CREATOR = new Creator<Bridge>()
     {
-        this.ID = ID;
-    }
+        @Override
+        public Bridge createFromParcel(Parcel in)
+        {
+            return new Bridge(in);
+        }
+
+        @Override
+        public Bridge[] newArray(int size)
+        {
+            return new Bridge[size];
+        }
+    };
+
 
     public String getName()
     {
@@ -41,5 +56,29 @@ public class Bridge
     public void setIP(String IP)
     {
         this.IP = IP;
+    }
+
+    public String getUsername()
+    {
+        return Username;
+    }
+
+    public void setUsername(String username)
+    {
+        Username = username;
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(Name);
+        dest.writeString(IP);
+        dest.writeString(Username);
     }
 }

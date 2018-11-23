@@ -58,4 +58,24 @@ public class HueProtocol
         }
         return json;
     }
+
+    public static JSONObject setLight(boolean state){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("on", state);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    public static JSONObject setLight(int brightness){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("bri", brightness);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
 }

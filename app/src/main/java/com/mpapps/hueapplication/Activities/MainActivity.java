@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
 import com.mpapps.hueapplication.LightManager;
@@ -16,6 +17,7 @@ import com.mpapps.hueapplication.Adapters.LightsAdapter;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
+import com.mpapps.hueapplication.SQLite.DatabaseHandler;
 import com.mpapps.hueapplication.Volley.HueProtocol;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
@@ -23,6 +25,7 @@ import com.mpapps.hueapplication.Volley.VolleyService;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements VolleyListener, BridgeFragment.OnFragmentInteractionListener, RecyclerViewAdapter.ItemClickListener
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
     private VolleyService volleyService;
     private LightManager manager;
     RecyclerViewAdapter adapter;
+    private Bridge thisBridge;
+    //private DatabaseHandler database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,17 +45,17 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
         manager = new LightManager();
 
-        RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
-        LightsAdapter lightsAdapter = new LightsAdapter(this, manager.getLights());
-        recyclerView.setAdapter(lightsAdapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
+
+//        RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
+//        LightsAdapter lightsAdapter = new LightsAdapter(this, manager.getLights());
+//        recyclerView.setAdapter(lightsAdapter);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+        //tests
         volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
         volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1,5000,1));
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        BridgeFragment bridgeFragment = BridgeFragment.newInstance(this);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.mainactivity_bridge_fragment, bridgeFragment).addToBackStack(null).commit();
 
         recyclerView = findViewById(R.id.RecyclerViewLights);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
                 e.printStackTrace();
             }
         }
+        if(!succeeded)
+            Toast.makeText(this,"Light Request not succeeded", Toast.LENGTH_SHORT).show();
     }
 
     @Override

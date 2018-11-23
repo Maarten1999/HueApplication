@@ -1,6 +1,8 @@
 package com.mpapps.hueapplication.Activities;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +11,9 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.R;
@@ -26,8 +31,8 @@ public class BridgeFragment extends DialogFragment
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private EditText nameEditText;
+    private EditText ipEditText;
 
     private OnFragmentInteractionListener mListener;
 
@@ -70,13 +75,17 @@ public class BridgeFragment extends DialogFragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        //todo shit
+        nameEditText = view.findViewById(R.id.bridge_fragment_edittext_name);
+        ipEditText = view.findViewById(R.id.bridge_fragment_edittext_ip);
+
+        Button addButton = view.findViewById(R.id.bridge_fragment_button_add);
+        addButton.setOnClickListener((View v) -> onButtonPressed(v));
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Bridge bridge)
+    public void onButtonPressed(View view)
     {
         if (mListener != null) {
+            Bridge bridge = new Bridge(nameEditText.getText().toString(), ipEditText.getText().toString());
             mListener.onFragmentInteraction(bridge);
         }
     }

@@ -26,7 +26,7 @@ public class VolleyService
     private String requestResponse;
     private RequestQueue requestQueue;
     private VolleyListener listener;
-    public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94";
+    public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/3a6a380415175c7acbe40b95b25c104";
     public static final String basicRequestUrlMaartenSchool = "http://145.49.21.167:80/api/93e934e1ac5531c48ebf7838af52e94";
 
     private VolleyService (Context context, VolleyListener listener){
