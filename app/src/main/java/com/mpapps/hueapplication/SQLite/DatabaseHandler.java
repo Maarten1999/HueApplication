@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
@@ -23,8 +24,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         String CREATE_CONTACT_TABLE = "CREATE TABLE " + Util.TABLE_BRIDGES + "("
                 + Util.KEY_NAME + " TEXT PRIMARY KEY, "
-                + Util.KEY_USERNAME + "TEXT, "
-                + Util.KEY_IP + "TEXT" + " )";
+                + Util.KEY_USERNAME + " TEXT, "
+                + Util.KEY_IP + " TEXT " + " )";
         db.execSQL(CREATE_CONTACT_TABLE);
     }
 
@@ -47,7 +48,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
         contentValues.put(Util.KEY_USERNAME, bridge.getUsername());
         contentValues.put(Util.KEY_IP, bridge.getIP());
 
-        db.insert(Util.TABLE_BRIDGES, null, contentValues);
+        long returnValue = db.insert(Util.TABLE_BRIDGES, null, contentValues);
+        Log.i("DatabaseHandler", String.valueOf(returnValue));
     }
 
     public Bridge getBridge(String name){

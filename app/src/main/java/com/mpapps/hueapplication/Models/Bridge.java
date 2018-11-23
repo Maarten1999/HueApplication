@@ -13,6 +13,7 @@ public class Bridge implements Parcelable
     {
         Name = name;
         this.IP = IP;
+        Username = "default";
     }
 
     public Bridge(String name, String IP, String username)

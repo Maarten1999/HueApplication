@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -32,11 +33,14 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
 
         database = new DatabaseHandler(this);
         bridges = database.getAllBridges();
+        bridges.add(new Bridge("hello World", "34234234"));
 
         RecyclerView recyclerView = findViewById(R.id.RecyclerViewBridges);
         adapter = new BridgesAdapter(this, bridges);
         adapter.setClickListener(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         FloatingActionButton addBridgeButton = findViewById(R.id.bridgeactivity_addBridgeButton);
         addBridgeButton.setOnClickListener((View v) -> OnFloatingActionButtonClick(v));
@@ -47,7 +51,9 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
     {
         database.addBridge(bridge);
         bridges.add(bridge);
-        //todo notify adapter
+        adapter.notifyItemInserted(bridges.size() - 1);
+        getSupportFragmentManager().popBackStack();
+
     }
 
     @Override

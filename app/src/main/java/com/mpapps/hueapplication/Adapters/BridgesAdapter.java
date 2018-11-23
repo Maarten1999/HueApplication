@@ -14,17 +14,17 @@ import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 public class BridgesAdapter extends RecyclerView.Adapter<BridgesAdapter.ViewHolder>
 {
-
-    private Context context;
+    private LayoutInflater inflater;
     private List<Bridge> bridges;
     private OnItemClickListener clickListener;
 
     public BridgesAdapter(Context context, List<Bridge> bridges)
     {
-        this.context = context;
+        this.inflater = LayoutInflater.from(context);
         this.bridges = bridges;
     }
 
@@ -32,17 +32,16 @@ public class BridgesAdapter extends RecyclerView.Adapter<BridgesAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.recyclerview_item_bridge, parent, false);
-        return new BridgesAdapter.ViewHolder(view, context);
+        View view = inflater.inflate(R.layout.recyclerview_item_bridge,
+                parent, false);
+        return new BridgesAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
         Bridge bridge = bridges.get(position);
-
-        //todo some stuff
+        holder.bridgeTextView.setText(bridge.getName());
     }
 
     @Override
@@ -54,10 +53,9 @@ public class BridgesAdapter extends RecyclerView.Adapter<BridgesAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView bridgeTextView;
-        public ViewHolder(View itemView, final Context ctx)
+        public ViewHolder(View itemView)
         {
             super(itemView);
-            context = ctx;
 
             bridgeTextView = itemView.findViewById(R.id.recyclerview_item_bridge_textview);
             itemView.setOnClickListener(this);
