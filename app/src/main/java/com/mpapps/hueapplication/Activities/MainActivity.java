@@ -28,7 +28,7 @@ import org.json.JSONException;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener, BridgeFragment.OnFragmentInteractionListener, RecyclerViewAdapter.ItemClickListener
+public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.ItemClickListener
 {
 
     private VolleyService volleyService;
@@ -47,17 +47,12 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
 
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
 
-//        RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
-//        LightsAdapter lightsAdapter = new LightsAdapter(this, manager.getLights());
-//        recyclerView.setAdapter(lightsAdapter);
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-
         //tests
         volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
         volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1,5000,1));
 
-        recyclerView = findViewById(R.id.RecyclerViewLights);
+        //recyclerview
+        RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewAdapter(this, manager.getLights());
         adapter.setClickListener(this);
@@ -89,12 +84,6 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
         }
         if(!succeeded)
             Toast.makeText(this,"Light Request not succeeded", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onFragmentInteraction(Bridge bridge)
-    {
-
     }
 
     @Override

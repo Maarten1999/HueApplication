@@ -22,8 +22,9 @@ public class DatabaseHandler extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase db)
     {
         String CREATE_CONTACT_TABLE = "CREATE TABLE " + Util.TABLE_BRIDGES + "("
-                + Util.KEY_ID + " INTEGER PRIMARY KEY, " + Util.KEY_NAME + " TEXT, "
-                + Util.KEY_IP + "DOUBLE" + " )";
+                + Util.KEY_NAME + " TEXT PRIMARY KEY, "
+                + Util.KEY_USERNAME + "TEXT, "
+                + Util.KEY_IP + "TEXT" + " )";
         db.execSQL(CREATE_CONTACT_TABLE);
     }
 
@@ -43,23 +44,24 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Util.KEY_NAME, bridge.getName());
+        contentValues.put(Util.KEY_USERNAME, bridge.getUsername());
         contentValues.put(Util.KEY_IP, bridge.getIP());
 
         db.insert(Util.TABLE_BRIDGES, null, contentValues);
     }
 
-    public Bridge getBridge(int id){
+    public Bridge getBridge(String name){
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
                 Util.TABLE_BRIDGES,
-                new String[]{Util.KEY_ID, Util.KEY_NAME, Util.KEY_IP},
-                Util.KEY_ID + "=?",
-                new String[]{String.valueOf(id)},
+                new String[]{Util.KEY_NAME, Util.KEY_USERNAME, Util.KEY_IP},
+                Util.KEY_NAME + "= ?",
+                new String[]{name},
                 null, null, null, null);
         if(cursor != null) cursor.moveToFirst();
 
-        return new Bridge(cursor.getInt(0),
+        return new Bridge(cursor.getString(0),
                 cursor.getString(1),
                 cursor.getString(2));
     }
@@ -73,8 +75,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
         if(cursor.moveToFirst()){
             do {
-                Bridge bridge = new Bridge(cursor.getInt(0),
-                        cursor.getString(1),
+                Bridge bridge = new Bridge(cursor.getString(1),
                         cursor.getString(2));
                 bridges.add(bridge);
             } while(cursor.moveToNext());

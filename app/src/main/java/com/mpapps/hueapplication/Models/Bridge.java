@@ -15,6 +15,13 @@ public class Bridge implements Parcelable
         this.IP = IP;
     }
 
+    public Bridge(String name, String IP, String username)
+    {
+        Name = name;
+        this.IP = IP;
+        Username = username;
+    }
+
     protected Bridge(Parcel in)
     {
         Name = in.readString();
