@@ -1,12 +1,16 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Adapters.LightsAdapter;
 import com.mpapps.hueapplication.Models.Bridge;
@@ -21,11 +25,12 @@ import org.json.JSONException;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener, BridgeFragment.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements VolleyListener, BridgeFragment.OnFragmentInteractionListener, RecyclerViewAdapter.ItemClickListener
 {
 
     private VolleyService volleyService;
     private LightManager manager;
+    RecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +51,12 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
         BridgeFragment bridgeFragment = BridgeFragment.newInstance(this);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.mainactivity_bridge_fragment, bridgeFragment).addToBackStack(null).commit();
+
+        recyclerView = findViewById(R.id.RecyclerViewLights);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new RecyclerViewAdapter(this, manager.getLights());
+        adapter.setClickListener(this);
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -77,5 +88,11 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, B
     public void onFragmentInteraction(Bridge bridge)
     {
 
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+        startActivity(intent);
     }
 }
