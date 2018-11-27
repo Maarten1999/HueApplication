@@ -2,8 +2,14 @@ package com.mpapps.hueapplication.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -11,82 +17,59 @@ import android.widget.TextView;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 
-public class DetailActivity extends AppCompatActivity {
-    ImageView lightImage;
-    SeekBar redSlider, greenSlider, blueSlider;
-    TextView redValue, greenValue, blueValue;
+import top.defaults.colorpicker.ColorPickerPopup;
+import top.defaults.colorpicker.ColorPickerView;
+
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener {
+
     HueLight light;
+    ColorPickerView colorPickerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_detail);
 
+
         Intent intent = getIntent();
-        light = (HueLight) intent.getParcelableExtra("LAMP");
+        light = intent.getParcelableExtra("LAMP");
 
-        lightImage = findViewById(R.id.detailLampImage);
+        colorPickerView = findViewById(R.id.colorPicker);
 
-        float[] hsv = new float[]{light.getHue(),light.getSaturation(), light.getBrightness()};
-        lightImage.setBackgroundColor(Color.HSVToColor(hsv));
+        colorPickerView.subscribe((color, fromUser) -> {
 
-        redSlider = findViewById(R.id.redSlider);
-        greenSlider = findViewById(R.id.greenSlider);
-        blueSlider = findViewById(R.id.blueSlider);
-
-        redValue = findViewById(R.id.redValue);
-        greenValue = findViewById(R.id.greenValue);
-        blueValue = findViewById(R.id.blueValue);
-
-        redSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                redValue.setText(progress);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(color);
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setBackgroundDrawable(new ColorDrawable(color));
             }
         });
+    }
 
-        greenSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                greenValue.setText(progress);
-            }
+    @Override
+    public void onClick(View v) {
+        new ColorPickerPopup.Builder(this)
+                .initialColor(colorPickerView.getColor())
+                .enableAlpha(true)
+                .okTitle("Choose")
+                .cancelTitle("Cancel")
+                .showIndicator(true)
+                .showValue(true)
+                .build()
+                .show(new ColorPickerPopup.ColorPickerObserver() {
+                    @Override
+                    public void onColorPicked(int color) {
+                        v.setBackgroundColor(color);
+                        colorPickerView.setInitialColor(color);
+                    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+                    @Override
+                    public void onColor(int color, boolean fromUser) {
 
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        blueSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                blueValue.setText(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+                    }
+                });
     }
 }
