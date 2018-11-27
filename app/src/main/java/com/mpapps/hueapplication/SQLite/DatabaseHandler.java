@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
 
 import java.util.ArrayList;
@@ -15,9 +14,19 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper
 {
-    public DatabaseHandler(Context context) {
+    private static DatabaseHandler sInstance = null;
+    private DatabaseHandler(Context context)
+    {
         super(context, Util.DB_NAME, null, Util.DB_VERSION);
     }
+
+    public static DatabaseHandler getInstance(Context context){
+        if (sInstance == null){
+            sInstance = new DatabaseHandler(context);
+        }
+        return sInstance;
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db)
@@ -40,7 +49,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
         onCreate(db);
     }
 
-    public void addBridge(Bridge bridge){
+    public void addBridge(Bridge bridge)
+    {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -48,11 +58,13 @@ public class DatabaseHandler extends SQLiteOpenHelper
         contentValues.put(Util.KEY_USERNAME, bridge.getUsername());
         contentValues.put(Util.KEY_IP, bridge.getIP());
 
-        long returnValue = db.insert(Util.TABLE_BRIDGES, null, contentValues);
+        long returnValue = db.insertWithOnConflict(Util.TABLE_BRIDGES, null,
+                contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         Log.i("DatabaseHandler", String.valueOf(returnValue));
     }
 
-    public Bridge getBridge(String name){
+    public Bridge getBridge(String name)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
@@ -61,27 +73,43 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 Util.KEY_NAME + "= ?",
                 new String[]{name},
                 null, null, null, null);
-        if(cursor != null) cursor.moveToFirst();
+        if (cursor != null) cursor.moveToFirst();
 
         return new Bridge(cursor.getString(0),
-                cursor.getString(1),
-                cursor.getString(2));
+                cursor.getString(2),
+                cursor.getString(1));
     }
 
-    public List<Bridge> getAllBridges(){
+    public List<Bridge> getAllBridges()
+    {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Bridge> bridges = new ArrayList<>();
 
         String selectAll = "SELECT * FROM " + Util.TABLE_BRIDGES;
         Cursor cursor = db.rawQuery(selectAll, null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
-                Bridge bridge = new Bridge(cursor.getString(1),
-                        cursor.getString(2));
+                Bridge bridge = new Bridge(cursor.getString(0),
+                        cursor.getString(2),
+                        cursor.getString(1));
                 bridges.add(bridge);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         return bridges;
+    }
+
+    public void updateBridge(Bridge thisBridge)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Util.KEY_NAME, thisBridge.getName());
+        contentValues.put(Util.KEY_USERNAME, thisBridge.getUsername());
+        contentValues.put(Util.KEY_IP, thisBridge.getIP());
+
+        long returnValue = db.update(Util.TABLE_BRIDGES,
+                contentValues, Util.KEY_NAME + "= '" + thisBridge.getName() + "'", null );
+        Log.i("DatabaseHandler", String.valueOf(returnValue));
     }
 }

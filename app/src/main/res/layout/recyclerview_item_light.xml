@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="6dp"
-    app:cardElevation="6dp">
+    app:cardElevation="6dp"
+    android:id="@+id/cardview_light">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -41,13 +42,15 @@
             android:id="@+id/recycleview_item_seekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxHeight="15dp"
-            android:minHeight="15dp"
+            android:maxHeight="20dp"
+            android:minHeight="20dp"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:paddingBottom="0dp"
             android:progressDrawable="@drawable/seekbar_progressbar"
             android:splitTrack="false"
+            android:max="254"
+            android:min="0"
             android:thumb="@drawable/seekbar_thumb"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

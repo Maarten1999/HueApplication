@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class HueLight implements Parcelable
 {
     private int id;
+    private String name;
     private boolean state;
     private int brightness;
     private int hue;
@@ -13,24 +14,46 @@ public class HueLight implements Parcelable
     private double x;
     private double y;
 
-    public HueLight(int id, boolean state, int brightness, int hue, int saturation)
+    public HueLight(int id, String name,boolean state, int brightness, int hue, int saturation)
     {
         this.id = id;
+        this.name = name;
         this.state = state;
         this.brightness = brightness;
         this.hue = hue;
         this.saturation = saturation;
     }
 
+
     protected HueLight(Parcel in)
     {
         id = in.readInt();
+        name = in.readString();
         state = in.readByte() != 0;
         brightness = in.readInt();
         hue = in.readInt();
         saturation = in.readInt();
         x = in.readDouble();
         y = in.readDouble();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeByte((byte) (state ? 1 : 0));
+        dest.writeInt(brightness);
+        dest.writeInt(hue);
+        dest.writeInt(saturation);
+        dest.writeDouble(x);
+        dest.writeDouble(y);
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
     }
 
     public static final Creator<HueLight> CREATOR = new Creator<HueLight>()
@@ -111,21 +134,13 @@ public class HueLight implements Parcelable
 
     public void setId(int id) {this.id = id;}
 
-    @Override
-    public int describeContents()
+    public String getName()
     {
-        return 0;
+        return name;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
+    public void setName(String name)
     {
-        dest.writeInt(id);
-        dest.writeByte((byte) (state ? 1 : 0));
-        dest.writeInt(brightness);
-        dest.writeInt(hue);
-        dest.writeInt(saturation);
-        dest.writeDouble(x);
-        dest.writeDouble(y);
+        this.name = name;
     }
 }

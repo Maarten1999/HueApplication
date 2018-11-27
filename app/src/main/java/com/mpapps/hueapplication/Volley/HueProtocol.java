@@ -18,10 +18,10 @@ public class HueProtocol
         return json;
     }
 
-    public static String UsernameParse(JSONObject response)
+    public static String UsernameParse(JSONArray response)
     {
         try {
-            return response.getJSONObject("success").getString("username");
+            return response.getJSONObject(0).getJSONObject("success").getString("username");
         } catch (JSONException e) {
             return null;
         }

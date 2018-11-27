@@ -1,7 +1,8 @@
 package com.mpapps.hueapplication.Volley;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+
+import android.graphics.Color;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -10,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 
 import org.json.JSONArray;
@@ -22,15 +24,13 @@ import java.util.List;
 public class VolleyService
 {
     private static VolleyService sInstance = null;
-    private Context context;
-    private String requestResponse;
     private RequestQueue requestQueue;
     private VolleyListener listener;
     public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/3a6a380415175c7acbe40b95b25c104";
     public static final String basicRequestUrlMaartenSchool = "http://145.49.21.167:80/api/93e934e1ac5531c48ebf7838af52e94";
 
+
     private VolleyService (Context context, VolleyListener listener){
-        this.context = context;
         requestQueue = Volley.newRequestQueue(context);
         this.listener = listener;
     }
@@ -42,25 +42,14 @@ public class VolleyService
         return sInstance;
     }
 
-    public void putRequest(String requestUrl, final JSONObject requestBody)
+    public void changeRequest(String requestUrl, final JSONObject requestBody, int method)
     {
         CustomJsonArrayRequest request = new CustomJsonArrayRequest(
-                Request.Method.PUT, requestUrl, requestBody,
-                new Response.Listener<JSONArray>()
+                method, requestUrl, requestBody,
+                response -> listener.ChangeRequestReceived(response),
+                error ->
                 {
-                    @Override
-                    public void onResponse(JSONArray response)
-                    {
-                        listener.PutLightsReceived(response);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-
-                    }
+                    Log.i("VolleyService", "Volley error");
                 }
         );
         requestQueue.add(request);
@@ -69,40 +58,55 @@ public class VolleyService
     public void getRequest(String requestUrl, final JSONObject requestBody){
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET, requestUrl, requestBody,
-                new Response.Listener<JSONObject>()
+                response ->
                 {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        List<HueLight> tempLights = new ArrayList<>();
-                        for (int i = 0; i < response.names().length(); i++) {
-                            try {
-                                int id = Integer.parseInt(response.names().getString(i));
-                                JSONObject lightJson = response.getJSONObject(response.names().getString(i)).getJSONObject("state");
-                                boolean state = lightJson.getBoolean("on");
-                                int saturation = lightJson.getInt("sat");
-                                int brightness = lightJson.getInt("bri");
-                                int hue = lightJson.getInt("hue");
-                                HueLight light = new HueLight(id, state, brightness, hue, saturation);
-                                tempLights.add(light);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                    List<HueLight> tempLights = new ArrayList<>();
+                    for (int i = 0; i < response.names().length(); i++) {
+                        try {
+                            int id = Integer.parseInt(response.names().getString(i));
+                            String name = response.getJSONObject(response.names().getString(i)).getString("name");
+                            JSONObject lightJson = response.getJSONObject(response.names().getString(i)).getJSONObject("state");
+                            boolean state = lightJson.getBoolean("on");
+                            int saturation = lightJson.getInt("sat");
+                            int brightness = lightJson.getInt("bri");
+                            int hue = lightJson.getInt("hue");
+
+                            HueLight light = new HueLight(id, name, state, brightness, hue, saturation);
+                            tempLights.add(light);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        listener.GetLightsReceived(tempLights);
                     }
+                    listener.GetLightsReceived(tempLights);
                 },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        Log.i("VolleyService", "Volley error");
-                    }
-                }
+                error -> Log.i("VolleyService", "Volley error")
         );
 
         requestQueue.add(request);
     }
 
+    public static String getUrl(Bridge bridge, VolleyType type, int lightId){
+        String url = "http://" + bridge.getIP() + "/api";
+        switch (type) {
+            case GETLIGHTS:
+                return url + "/" + bridge.getUsername() + "/lights";
+            case PUTLIGHTS:
+                return url + "/" + bridge.getUsername() + "/lights/" + lightId + "/state";
+            case GETSCHEDULES:
+                return url + "/" + bridge.getUsername() + "/schedules";
+            case USERNAME:
+                return url;
+            default:
+                return url + "/" + bridge.getUsername() + "/lights";
+
+        }
+    }
+    public enum VolleyType{
+        GETLIGHTS,
+        PUTLIGHTS,
+        GETSCHEDULES,
+        USERNAME,
+    }
 }
+
+

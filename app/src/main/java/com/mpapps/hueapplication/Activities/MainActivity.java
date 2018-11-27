@@ -1,19 +1,23 @@
 package com.mpapps.hueapplication.Activities;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
-import com.mpapps.hueapplication.LightManager;
-import com.mpapps.hueapplication.Adapters.LightsAdapter;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
@@ -26,70 +30,134 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.ItemClickListener {
+public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.OnChangeListener
+{
 
     private VolleyService volleyService;
-    private LightManager manager;
+    //private LightManager manager;
     RecyclerViewAdapter adapter;
     private Bridge thisBridge;
-    //private DatabaseHandler database;
+    private boolean isWaitingForHandshake = false;
+    private SwipeRefreshLayout swipeContainer;
+    private List<HueLight> lights;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
-        manager = new LightManager();
+        //manager = new LightManager();
 
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
+        if(thisBridge.getUsername() == null){
+            isWaitingForHandshake = true;
+            volleyService.changeRequest("http://" + thisBridge.getIP() + "/api", HueProtocol.getUsername("HueApplication"), Request.Method.POST);
+        }
 
-        //tests
-        //volleyService.getRequest("http://192.168.178.38:80/api/93e934e1ac5531c48ebf7838af52e94/lights", null);
-//        volleyService.putRequest(VolleyService.basicRequestUrlMaartenHome + "/lights/1/state", HueProtocol.setLight(false, 1, 5000, 1));
+        lights = new ArrayList<>();
 
-        ArrayList<HueLight> hueLights = new ArrayList<>();
-        hueLights.add(new HueLight(1, true, 4, 345, 2));
-
-        manager.setLights(hueLights);
-        //recyclerview
+        //manager.setLights(hueLights);
         RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecyclerViewAdapter(this, manager.getLights());
+        adapter = new RecyclerViewAdapter(this, lights);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        swipeContainer = findViewById(R.id.SwipeContainer);
+
+        swipeContainer.setOnRefreshListener(() -> {
+            if(isWaitingForHandshake)
+                volleyService.changeRequest("http://" +
+                        thisBridge.getIP() + "/api",
+                        HueProtocol.getUsername("HueApplication"),
+                        Request.Method.POST);
+            else
+                GetLights();
+                }
+        );
 
     }
 
     @Override
     public void GetLightsReceived(List<HueLight> lights) {
-        manager.setLights(lights);
+        swipeContainer.setRefreshing(false);
+        this.lights = lights;
+        adapter.clear();
+        adapter.addAll(lights);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void PutLightsReceived(JSONArray response) {
+    public void ChangeRequestReceived(JSONArray response) {
         boolean succeeded = true;
+        swipeContainer.setRefreshing(false);
         for (int i = 0; i < response.length(); i++) {
             try {
+
                 if (response.getJSONObject(i).getString("success") == null) {
                     succeeded = false;
-                    //todo something with a new request.
+                }else{
+                    if(isWaitingForHandshake){
+                        thisBridge.setUsername(HueProtocol.UsernameParse(response));
+                        DatabaseHandler.getInstance(this).updateBridge(thisBridge);
+                        isWaitingForHandshake = false;
+                    }
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                succeeded = false;
             }
         }
         if (!succeeded)
-            Toast.makeText(this, "Light Request not succeeded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Request not succeeded", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-        intent.putExtra("LAMP", manager.getLights().get(position));
+        intent.putExtra("LAMP", lights.get(position));
         startActivity(intent);
     }
+
+    @Override
+    public void onSwitchCheckedChangeListener(CompoundButton buttonView, boolean isChecked, int lightId)
+    {
+        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
+                HueProtocol.setLight(isChecked),Request.Method.PUT);
+    }
+
+    @Override
+    public void onSeekbarProgressChanged(SeekBar seekBar, int progress, int lightId)
+    {
+        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
+                HueProtocol.setLight(progress),Request.Method.PUT);
+    }
+
+    private void GetLights(){
+        volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
+
+        View view = menu.findItem(R.id.menu_switch).getActionView();
+
+        Switch actionBarSwitch = view.findViewById(R.id.switchForActionBar);
+//        MenuItem item = menu.findItem(R.id.menu_switch);
+//        Switch actionBarSwitch = (Switch) MenuItemCompat.getActionView(item);
+        actionBarSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            for (HueLight light : lights) {
+                volleyService.changeRequest(
+                        VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
+                        HueProtocol.setLight(isChecked), Request.Method.PUT);
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
 }
