@@ -12,14 +12,14 @@
                 <!--android:startColor="#61635f" />-->
         </shape>
     </item>
-    <item android:id="@android:id/progress">\
+    <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle" >
                 <corners android:radius="5dp" />
 
                 <gradient
                     android:angle="180"
-                    android:endColor="#883c3c3c"
+                    android:endColor="#003c3c3c"
                     android:startColor="@android:color/white" />
             </shape>
         </clip>
