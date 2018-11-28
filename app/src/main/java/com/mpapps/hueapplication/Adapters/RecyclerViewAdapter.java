@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -58,9 +58,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if (light.getSaturation() < 100 && light.getBrightness() > 100) {
             holder.lightname.setTextColor(Color.BLACK);
+            holder.lightIcon.setImageResource(R.drawable.hue_light_black);
         }
         else {
             holder.lightname.setTextColor(Color.WHITE);
+            holder.lightIcon.setImageResource(R.drawable.hue_light);
         }
 
         holder.cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
@@ -110,6 +112,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Switch lightSwitch;
         SeekBar brightness;
         TextView lightname;
+        ImageView lightIcon;
         boolean isTouched = false;
 
         @SuppressLint("ClickableViewAccessibility")
@@ -119,6 +122,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             lightname = itemView.findViewById(R.id.recycleview_item_textview);
             brightness = itemView.findViewById(R.id.recycleview_item_seekBar);
             lightSwitch = itemView.findViewById(R.id.recycleview_item_switch);
+            lightIcon = itemView.findViewById(R.id.recycleview_item_image);
 
             lightSwitch.setOnTouchListener((v, event) ->
             {
