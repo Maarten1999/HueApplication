@@ -27,8 +27,7 @@ import org.json.JSONArray;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements VolleyListener
-{
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements VolleyListener {
     private LayoutInflater mInflater;
     private OnChangeListener mClickListener;
     private Context ctx;
@@ -55,31 +54,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         HueLight light = manager.getLights().get(position);
-        float[] hsv = {light.getHue()/182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
+        float[] hsv = {light.getHue() / 182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
+
+        if (light.getSaturation() < 100 && light.getBrightness() > 100) {
+            holder.lightname.setTextColor(Color.BLACK);
+        }
+        else {
+            holder.lightname.setTextColor(Color.WHITE);
+        }
+
         holder.cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
         holder.lightname.setText(light.getName());
         holder.lightSwitch.setChecked(light.isState());
         holder.brightness.setProgress(light.getBrightness());
 
-
-        holder.brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-        {
+        holder.brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-            {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar)
-            {
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar)
-            {
+            public void onStopTrackingTouch(SeekBar seekBar) {
                 volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
-                        HueProtocol.setLight(seekBar.getProgress()),Request.Method.PUT);
+                        HueProtocol.setLight(seekBar.getProgress()), Request.Method.PUT);
             }
         });
     }
@@ -91,17 +93,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void GetLightsReceived(List<HueLight> lights)
-    {
+    public void GetLightsReceived(List<HueLight> lights) {
 //        manager.setLights(lights);
 //        notifyDataSetChanged();
     }
 
     @Override
-    public void ChangeRequestReceived(JSONArray response)
-    {
-        volleyService.getRequest(VolleyService.getUrl(thisBridge,VolleyService.VolleyType.GETLIGHTS,
-                0),null);
+    public void ChangeRequestReceived(JSONArray response) {
+        volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS,
+                0), null);
     }
 
 
@@ -125,12 +125,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 isTouched = true;
                 return false;
             });
-            lightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-            {
+            lightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-                {
-                    if(isTouched){
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isTouched) {
                         isTouched = false;
                         volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, manager.getLights().get(getAdapterPosition()).getId()),
                                 HueProtocol.setLight(isChecked), Request.Method.PUT);
@@ -155,8 +153,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mClickListener = itemClickListener;
     }
 
-    public interface OnChangeListener
-    {
+    public interface OnChangeListener {
         void onItemClick(View view, int position);
     }
 }
