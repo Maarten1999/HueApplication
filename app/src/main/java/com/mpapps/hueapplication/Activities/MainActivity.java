@@ -125,13 +125,14 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     @Override
     public void onItemClick(View view, int position) {
         List<HueLight> lights = manager.getLights();
-        
+
         if (lights.get(position).isState()) {
             Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
             intent.putExtra("LAMP", lights.get(position));
             intent.putExtra("BRIDGE", thisBridge);
             startActivity(intent);
-        }
+        }else
+            Toast.makeText(this,"turn on the lamp first", Toast.LENGTH_LONG).show();
     }
 
     private void GetLights() {
