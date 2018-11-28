@@ -124,27 +124,14 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
     @Override
     public void onItemClick(View view, int position) {
+        List<HueLight> lights = manager.getLights();
+        
         if (lights.get(position).isState()) {
             Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
             intent.putExtra("LAMP", lights.get(position));
             intent.putExtra("BRIDGE", thisBridge);
             startActivity(intent);
         }
-    }
-
-    @Override
-    public void onSwitchCheckedChangeListener(CompoundButton buttonView, boolean isChecked, int lightId) {
-        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                HueProtocol.setLight(isChecked), Request.Method.PUT);
-        for (HueLight light : lights)
-            if (light.getId() == lightId)
-                light.setState(isChecked);
-    }
-
-    @Override
-    public void onSeekbarProgressChanged(SeekBar seekBar, int progress, int lightId) {
-        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                HueProtocol.setLight(progress), Request.Method.PUT);
     }
 
     private void GetLights() {
