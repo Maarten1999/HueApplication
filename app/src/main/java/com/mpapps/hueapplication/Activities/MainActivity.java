@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
         );
 
-
+        GetLights();
     }
 
     @Override

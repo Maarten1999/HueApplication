@@ -62,9 +62,9 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
         colorPickerView.subscribe((color, fromUser) -> {
 
             Color.colorToHSV(color, hsv);
+            if (fromUser)
             volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
                     HueProtocol.setLight(light.isState(), (int) (hsv[2] * 254f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 245)), Request.Method.PUT);
-
         });
     }
 
