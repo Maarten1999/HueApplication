@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     private MainActivityViewModel viewModel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        viewModel = ViewModelProviders.
@@ -78,29 +79,31 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
         swipeContainer = findViewById(R.id.SwipeContainer);
 
-        swipeContainer.setOnRefreshListener(() -> {
-            if(isWaitingForHandshake)
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            if (isWaitingForHandshake)
                 volleyService.changeRequest("http://" +
-                        thisBridge.getIP() + "/api",
+                                thisBridge.getIP() + "/api",
                         HueProtocol.getUsername("HueApplication"),
                         Request.Method.POST);
             else
                 GetLights();
 
             Handler mHandler = new Handler();
-            mHandler.postDelayed(() -> {
+            mHandler.postDelayed(() ->
+            {
                 swipeContainer.setRefreshing(false);
                 //volleyService.emptyRequestQueue();
             }, 5000);
-                }
+        });
 
-        );
-
-        GetLights();
+        if (!isWaitingForHandshake)
+            GetLights();
     }
 
     @Override
-    public void GetLightsReceived(List<HueLight> lights) {
+    public void GetLightsReceived(List<HueLight> lights)
+    {
         swipeContainer.setRefreshing(false);
         manager.setLights(lights);
         adapter.clear();
@@ -109,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void ChangeRequestReceived(JSONArray response) {
+    public void ChangeRequestReceived(JSONArray response)
+    {
         boolean succeeded = true;
         swipeContainer.setRefreshing(false);
         for (int i = 0; i < response.length(); i++) {
@@ -122,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
                         thisBridge.setUsername(HueProtocol.UsernameParse(response));
                         DatabaseHandler.getInstance(this).updateBridge(thisBridge);
                         isWaitingForHandshake = false;
+                        Toast.makeText(this, "Paired with Bridgeq", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -131,12 +136,12 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         }
         if (!succeeded)
             Toast.makeText(this, "Request not succeeded", Toast.LENGTH_SHORT).show();
-        volleyService.getRequest(VolleyService.getUrl(thisBridge,VolleyService.VolleyType.GETLIGHTS,
-                0),null);
+        GetLights();
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position)
+    {
         List<HueLight> lights = manager.getLights();
 
         if (lights.get(position).isState()) {
@@ -144,16 +149,18 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
             intent.putExtra("LAMP", lights.get(position));
             intent.putExtra("BRIDGE", thisBridge);
             startActivity(intent);
-        }else
-            Toast.makeText(this,"turn on the lamp first", Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(this, "turn on the lamp first", Toast.LENGTH_LONG).show();
     }
 
-    private void GetLights() {
+    private void GetLights()
+    {
         volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
 
         View view = menu.findItem(R.id.menu_switch).getActionView();
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         return super.onCreateOptionsMenu(menu);
     }
 
-        @Override
+    @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
@@ -201,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     {
         super.onResume();
 
-        if(mListState != null)
+        if (mListState != null)
             layoutManager.onRestoreInstanceState(mListState);
     }
 

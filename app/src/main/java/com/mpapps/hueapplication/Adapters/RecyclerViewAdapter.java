@@ -99,7 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         SeekBar brightness;
         TextView lightname;
         ImageView lightIcon;
-        boolean isTouched = false;
+        private boolean isTouched = false;
 
         @SuppressLint("ClickableViewAccessibility")
         ViewHolder(View itemView) {
@@ -120,7 +120,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isTouched) {
                         isTouched = false;
-                        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, manager.getLights().get(getAdapterPosition()).getId()),
+                        HueLight light = manager.getLights().get(getAdapterPosition());
+                        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
                                 HueProtocol.setLight(isChecked), Request.Method.PUT);
 
                     }
@@ -146,10 +147,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     HueLight light = manager.getLights().get(getAdapterPosition());
                     volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
                             HueProtocol.setLight(seekBar.getProgress()),Request.Method.PUT);
-                    float[] hsv = {light.getHue()/182.04f, light.getSaturation() / 254f, seekBar.getProgress() / 254f};
-                    cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
-                    LightManager.getInstance().getLights().get(getAdapterPosition()).setBrightness(seekBar.getProgress());
-                    notifyItemChanged(getAdapterPosition(), null);
+//                    float[] hsv = {light.getHue()/182.04f, light.getSaturation() / 254f, seekBar.getProgress() / 254f};
+//                    cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
+//                    LightManager.getInstance().getLights().get(getAdapterPosition()).setBrightness(seekBar.getProgress());
+//                    notifyItemChanged(getAdapterPosition(), null);
                 }
             });
             itemView.setOnClickListener(this);
