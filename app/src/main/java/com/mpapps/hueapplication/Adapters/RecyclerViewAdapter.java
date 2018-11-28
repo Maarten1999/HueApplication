@@ -25,6 +25,7 @@ import com.mpapps.hueapplication.Volley.VolleyService;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements VolleyListener {
@@ -34,10 +35,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private LightManager manager;
     private VolleyService volleyService;
     private Bridge thisBridge;
+    //private List<HueLight> lights;
 
     // data is passed into the constructor
     public RecyclerViewAdapter(Context context, Bridge bridge) {
         this.mInflater = LayoutInflater.from(context);
+        //lights = LightManager.getInstance().getLights();
         manager = LightManager.getInstance();
         ctx = context;
         thisBridge = bridge;
@@ -69,23 +72,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.lightname.setText(light.getName());
         holder.lightSwitch.setChecked(light.isState());
         holder.brightness.setProgress(light.getBrightness());
-
-        holder.brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
-                        HueProtocol.setLight(seekBar.getProgress()), Request.Method.PUT);
-            }
-        });
     }
 
     // total number of rows
@@ -140,6 +126,32 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     }
                 }
             });
+
+            brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+            {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+                {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar)
+                {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar)
+                {
+                    HueLight light = manager.getLights().get(getAdapterPosition());
+                    volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
+                            HueProtocol.setLight(seekBar.getProgress()),Request.Method.PUT);
+                    float[] hsv = {light.getHue()/182.04f, light.getSaturation() / 254f, seekBar.getProgress() / 254f};
+                    cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
+                    LightManager.getInstance().getLights().get(getAdapterPosition()).setBrightness(seekBar.getProgress());
+                    notifyItemChanged(getAdapterPosition(), null);
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
@@ -159,5 +171,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public interface OnChangeListener {
         void onItemClick(View view, int position);
+    }
+
+    public void clear(){
+        //lights.clear();
+        //notifyDataSetChanged();
+    }
+
+    public void addAll(List<HueLight> lights)
+    {
+        //this.lights.addAll(lights);
+        //notifyDataSetChanged();
     }
 }

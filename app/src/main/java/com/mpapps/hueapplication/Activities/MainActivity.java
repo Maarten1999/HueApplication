@@ -1,13 +1,16 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
 import com.mpapps.hueapplication.LightManager;
+import com.mpapps.hueapplication.MainActivityViewModel;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
@@ -42,11 +46,15 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     private Bridge thisBridge;
     private boolean isWaitingForHandshake = false;
     private SwipeRefreshLayout swipeContainer;
+    private RecyclerView.LayoutManager layoutManager;
+    private Parcelable mListState;
+    private MainActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        viewModel = ViewModelProviders.
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
         manager = LightManager.getInstance();
 
@@ -60,10 +68,13 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
         manager.setLights(lights);
         RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         adapter = new RecyclerViewAdapter(this, thisBridge);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+
 
         swipeContainer = findViewById(R.id.SwipeContainer);
 
@@ -79,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
             Handler mHandler = new Handler();
             mHandler.postDelayed(() -> {
                 swipeContainer.setRefreshing(false);
-                volleyService.emptyRequestQueue();
+                //volleyService.emptyRequestQueue();
             }, 5000);
                 }
 
@@ -92,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     public void GetLightsReceived(List<HueLight> lights) {
         swipeContainer.setRefreshing(false);
         manager.setLights(lights);
+        adapter.clear();
+        adapter.addAll(manager.getLights());
         adapter.notifyDataSetChanged();
     }
 
@@ -155,6 +168,41 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+        @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("BRIDGE", thisBridge);
+        ArrayList<HueLight> tempLights = new ArrayList<>(manager.getLights());
+        outState.putParcelableArrayList("LIGHTS", tempLights);
+        mListState = layoutManager.onSaveInstanceState();
+        outState.putParcelable("LIST_MANAGER", mListState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        thisBridge = savedInstanceState.getParcelable("BRIDGE");
+        adapter = new RecyclerViewAdapter(this, thisBridge);
+        manager.setLights(savedInstanceState.getParcelableArrayList("LIGHTS"));
+        adapter.clear();
+        adapter.addAll(manager.getLights());
+        mListState = savedInstanceState.getParcelable("LIST_MANAGER");
+        layoutManager.onRestoreInstanceState(mListState);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        if(mListState != null)
+            layoutManager.onRestoreInstanceState(mListState);
     }
 
 }
