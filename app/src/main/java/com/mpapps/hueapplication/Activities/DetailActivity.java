@@ -35,7 +35,6 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
     private HueLight light;
     private ColorPickerView colorPickerView;
     private float[] hsv = new float[3];
-    private double x, y;
     private int lightId;
     private VolleyService volleyService;
 
@@ -50,21 +49,19 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
         Intent intent = getIntent();
         light = intent.getParcelableExtra("LAMP");
         thisBridge = intent.getParcelableExtra("BRIDGE");
-        x = light.getX();
-        y = light.getY();
+
         lightId = light.getId();
 
         colorPickerView = findViewById(R.id.colorPicker);
-        float[] hsv = {light.getHue()/182.04f, light.getBrightness() / 254f, light.getSaturation() / 254f};
+        float[] hsv = {light.getHue() / 182.04f, light.getBrightness() / 254f, light.getSaturation() / 254f};
         colorPickerView.setInitialColor(Color.HSVToColor(hsv));
 
-        colorPickerView.setInitialColor(Color.WHITE);
         colorPickerView.subscribe((color, fromUser) -> {
 
             Color.colorToHSV(color, hsv);
             if (fromUser)
-            volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                    HueProtocol.setLight(light.isState(), (int) (hsv[2] * 254f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 245)), Request.Method.PUT);
+                volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
+                        HueProtocol.setLight(light.isState(), (int) (hsv[2] * 254f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 245)), Request.Method.PUT);
         });
     }
 
@@ -79,8 +76,7 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
     }
