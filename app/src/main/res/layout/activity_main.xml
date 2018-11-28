@@ -5,6 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.MainActivity">
+
+    <!--<android.support.design.widget.TabLayout-->
+        <!--android:id="@+id/simpleTabLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:tabGravity="fill"-->
+        <!--app:tabMode="fixed" >-->
+
+        <!--<com.google.android.material.tabs.TabItem-->
+            <!--android:text="Lights"/>-->
+
+        <!--<com.google.android.material.tabs.TabItem-->
+            <!--android:text="Schedules"/>-->
+
+    <!--</android.support.design.widget.TabLayout>-->
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/SwipeContainer"
         android:layout_width="match_parent"
