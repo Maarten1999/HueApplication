@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         manager = LightManager.getInstance();
 
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
-        if(thisBridge.getUsername() == null){
+        if (thisBridge.getUsername() == null) {
             isWaitingForHandshake = true;
             volleyService.changeRequest("http://" + thisBridge.getIP() + "/api", HueProtocol.getUsername("HueApplication"), Request.Method.POST);
         }
@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
                 if (response.getJSONObject(i).getString("success") == null) {
                     succeeded = false;
-                }else{
-                    if(isWaitingForHandshake){
+                } else {
+                    if (isWaitingForHandshake) {
                         thisBridge.setUsername(HueProtocol.UsernameParse(response));
                         DatabaseHandler.getInstance(this).updateBridge(thisBridge);
                         isWaitingForHandshake = false;
@@ -124,18 +124,35 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-        intent.putExtra("LAMP", manager.getLights().get(position));
-        startActivity(intent);
+        if (lights.get(position).isState()) {
+            Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+            intent.putExtra("LAMP", lights.get(position));
+            intent.putExtra("BRIDGE", thisBridge);
+            startActivity(intent);
+        }
     }
 
-    private void GetLights(){
+    @Override
+    public void onSwitchCheckedChangeListener(CompoundButton buttonView, boolean isChecked, int lightId) {
+        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
+                HueProtocol.setLight(isChecked), Request.Method.PUT);
+        for (HueLight light : lights)
+            if (light.getId() == lightId)
+                light.setState(isChecked);
+    }
+
+    @Override
+    public void onSeekbarProgressChanged(SeekBar seekBar, int progress, int lightId) {
+        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
+                HueProtocol.setLight(progress), Request.Method.PUT);
+    }
+
+    private void GetLights() {
         volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
 
         View view = menu.findItem(R.id.menu_switch).getActionView();
