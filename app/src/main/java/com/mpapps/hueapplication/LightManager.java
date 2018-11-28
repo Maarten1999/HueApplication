@@ -8,8 +8,16 @@ import java.util.List;
 public class LightManager
 {
     private List<HueLight> lights;
+    private static LightManager sInstance;
 
-    public LightManager()
+    public static LightManager getInstance(){
+        if (sInstance == null){
+            sInstance = new LightManager();
+        }
+        return sInstance;
+    }
+
+    private LightManager()
     {
         this.lights = new ArrayList<>();
     }

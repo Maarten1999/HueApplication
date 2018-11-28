@@ -1,10 +1,12 @@
 package com.mpapps.hueapplication.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -12,24 +14,35 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.mpapps.hueapplication.LightManager;
+import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
+import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
+
+import org.json.JSONArray;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-
-    private List<HueLight> mData;
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements VolleyListener
+{
     private LayoutInflater mInflater;
     private OnChangeListener mClickListener;
     private Context ctx;
+    private LightManager manager;
+    private VolleyService volleyService;
+    private Bridge thisBridge;
 
     // data is passed into the constructor
-    public RecyclerViewAdapter(Context context, List<HueLight> data) {
+    public RecyclerViewAdapter(Context context, Bridge bridge) {
         this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+        manager = LightManager.getInstance();
         ctx = context;
+        thisBridge = bridge;
+        volleyService = VolleyService.getInstance(ctx, this);
     }
 
     // inflates the row layout from xml when needed
@@ -41,20 +54,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        HueLight light = mData.get(position);
+        HueLight light = manager.getLights().get(position);
         float[] hsv = {light.getHue()/182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
         holder.cardView.setCardBackgroundColor(Color.HSVToColor(hsv));
         holder.lightname.setText(light.getName());
         holder.lightSwitch.setChecked(light.isState());
         holder.brightness.setProgress(light.getBrightness());
 
-        holder.lightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mClickListener.onSwitchCheckedChangeListener(buttonView, isChecked, light.getId()));
+
         holder.brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-
             }
 
             @Override
@@ -66,7 +78,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
             {
-                mClickListener.onSeekbarProgressChanged(seekBar, seekBar.getProgress(), light.getId());
+                volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
+                        HueProtocol.setLight(seekBar.getProgress()),Request.Method.PUT);
             }
         });
     }
@@ -74,17 +87,32 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // total number of rows
     @Override
     public int getItemCount() {
-        return mData.size();
+        return manager.getLights().size();
+    }
+
+    @Override
+    public void GetLightsReceived(List<HueLight> lights)
+    {
+//        manager.setLights(lights);
+//        notifyDataSetChanged();
+    }
+
+    @Override
+    public void ChangeRequestReceived(JSONArray response)
+    {
+        volleyService.getRequest(VolleyService.getUrl(thisBridge,VolleyService.VolleyType.GETLIGHTS,
+                0),null);
     }
 
 
-    // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cardView;
         Switch lightSwitch;
         SeekBar brightness;
         TextView lightname;
+        boolean isTouched = false;
 
+        @SuppressLint("ClickableViewAccessibility")
         ViewHolder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardview_light);
@@ -92,7 +120,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             brightness = itemView.findViewById(R.id.recycleview_item_seekBar);
             lightSwitch = itemView.findViewById(R.id.recycleview_item_switch);
 
+            lightSwitch.setOnTouchListener((v, event) ->
+            {
+                isTouched = true;
+                return false;
+            });
+            lightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                {
+                    if(isTouched){
+                        isTouched = false;
+                        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, manager.getLights().get(getAdapterPosition()).getId()),
+                                HueProtocol.setLight(isChecked), Request.Method.PUT);
 
+                    }
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
@@ -102,31 +147,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    // convenience method for getting data at click position
     public HueLight getItem(int id) {
-        return mData.get(id);
+        return manager.getLights().get(id);
     }
 
-    // allows clicks events to be caught
     public void setClickListener(OnChangeListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
-    // parent activity will implement this method to respond to click events
     public interface OnChangeListener
     {
         void onItemClick(View view, int position);
-        void onSwitchCheckedChangeListener(CompoundButton buttonView, boolean isChecked, int lightId);
-        void onSeekbarProgressChanged(SeekBar seekBar, int progress, int lightId);
-    }
-
-    public void clear(){
-        mData.clear();
-        notifyDataSetChanged();
-    }
-
-    public void addAll(List<HueLight> lights){
-        mData.addAll(lights);
-        notifyDataSetChanged();
     }
 }

@@ -85,6 +85,10 @@ public class VolleyService
         requestQueue.add(request);
     }
 
+    public void emptyRequestQueue(){
+        requestQueue.cancelAll(request -> true);
+    }
+
     public static String getUrl(Bridge bridge, VolleyType type, int lightId){
         String url = "http://" + bridge.getIP() + "/api";
         switch (type) {

@@ -1,6 +1,7 @@
 package com.mpapps.hueapplication.Activities;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
+import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
@@ -34,21 +36,19 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.OnChangeListener
 {
-
     private VolleyService volleyService;
-    //private LightManager manager;
+    private LightManager manager;
     RecyclerViewAdapter adapter;
     private Bridge thisBridge;
     private boolean isWaitingForHandshake = false;
     private SwipeRefreshLayout swipeContainer;
-    private List<HueLight> lights;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
-        //manager = new LightManager();
+        manager = LightManager.getInstance();
 
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
         if(thisBridge.getUsername() == null){
@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
             volleyService.changeRequest("http://" + thisBridge.getIP() + "/api", HueProtocol.getUsername("HueApplication"), Request.Method.POST);
         }
 
-        lights = new ArrayList<>();
+        List<HueLight> lights = new ArrayList<>();
 
-        //manager.setLights(hueLights);
+        manager.setLights(lights);
         RecyclerView recyclerView = findViewById(R.id.RecyclerViewLights);
-        adapter = new RecyclerViewAdapter(this, lights);
+        adapter = new RecyclerViewAdapter(this, thisBridge);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -75,17 +75,23 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
                         Request.Method.POST);
             else
                 GetLights();
+
+            Handler mHandler = new Handler();
+            mHandler.postDelayed(() -> {
+                swipeContainer.setRefreshing(false);
+                volleyService.emptyRequestQueue();
+            }, 5000);
                 }
+
         );
+
 
     }
 
     @Override
     public void GetLightsReceived(List<HueLight> lights) {
         swipeContainer.setRefreshing(false);
-        this.lights = lights;
-        adapter.clear();
-        adapter.addAll(lights);
+        manager.setLights(lights);
         adapter.notifyDataSetChanged();
     }
 
@@ -112,27 +118,15 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         }
         if (!succeeded)
             Toast.makeText(this, "Request not succeeded", Toast.LENGTH_SHORT).show();
+        volleyService.getRequest(VolleyService.getUrl(thisBridge,VolleyService.VolleyType.GETLIGHTS,
+                0),null);
     }
 
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-        intent.putExtra("LAMP", lights.get(position));
+        intent.putExtra("LAMP", manager.getLights().get(position));
         startActivity(intent);
-    }
-
-    @Override
-    public void onSwitchCheckedChangeListener(CompoundButton buttonView, boolean isChecked, int lightId)
-    {
-        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                HueProtocol.setLight(isChecked),Request.Method.PUT);
-    }
-
-    @Override
-    public void onSeekbarProgressChanged(SeekBar seekBar, int progress, int lightId)
-    {
-        volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                HueProtocol.setLight(progress),Request.Method.PUT);
     }
 
     private void GetLights(){
@@ -147,11 +141,9 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         View view = menu.findItem(R.id.menu_switch).getActionView();
 
         Switch actionBarSwitch = view.findViewById(R.id.switchForActionBar);
-//        MenuItem item = menu.findItem(R.id.menu_switch);
-//        Switch actionBarSwitch = (Switch) MenuItemCompat.getActionView(item);
         actionBarSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
-            for (HueLight light : lights) {
+            for (HueLight light : manager.getLights()) {
                 volleyService.changeRequest(
                         VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
                         HueProtocol.setLight(isChecked), Request.Method.PUT);

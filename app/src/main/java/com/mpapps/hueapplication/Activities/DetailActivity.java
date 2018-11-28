@@ -31,22 +31,23 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_detail);
 
-
         Intent intent = getIntent();
         light = intent.getParcelableExtra("LAMP");
 
         colorPickerView = findViewById(R.id.colorPicker);
+        float[] hsv = {light.getHue()/182.04f, light.getBrightness() / 254f, light.getSaturation() / 254f};
+        colorPickerView.setInitialColor(Color.HSVToColor(hsv));
 
-        colorPickerView.subscribe((color, fromUser) -> {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(color);
-            }
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setBackgroundDrawable(new ColorDrawable(color));
-            }
-        });
+//        colorPickerView.subscribe((color, fromUser) -> {
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                getWindow().setStatusBarColor(color);
+//            }
+//            ActionBar actionBar = getSupportActionBar();
+//            if (actionBar != null) {
+//                actionBar.setBackgroundDrawable(new ColorDrawable(color));
+//            }
+//        });
     }
 
     @Override
@@ -71,5 +72,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
                     }
                 });
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
     }
 }

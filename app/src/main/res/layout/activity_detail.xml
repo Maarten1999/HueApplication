@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.DetailActivity">
+    tools:context=".Activities.DetailActivity"
+    android:background="#3c3c3c">
 
     <top.defaults.colorpicker.ColorPickerView
         android:id="@+id/colorPicker"
