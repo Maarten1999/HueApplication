@@ -1,29 +1,19 @@
 package com.mpapps.hueapplication.Activities;
 
-import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
 import com.mpapps.hueapplication.LightManager;
-import com.mpapps.hueapplication.MainActivityViewModel;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
@@ -48,14 +38,12 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     private SwipeRefreshLayout swipeContainer;
     private RecyclerView.LayoutManager layoutManager;
     private Parcelable mListState;
-    private MainActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        viewModel = ViewModelProviders.
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
         manager = LightManager.getInstance();
 
@@ -158,24 +146,24 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
-
-        View view = menu.findItem(R.id.menu_switch).getActionView();
-
-        Switch actionBarSwitch = view.findViewById(R.id.switchForActionBar);
-        actionBarSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {
-            for (HueLight light : manager.getLights()) {
-                volleyService.changeRequest(
-                        VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
-                        HueProtocol.setLight(isChecked), Request.Method.PUT);
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu)
+//    {
+//        getMenuInflater().inflate(R.menu.mainactivity_menu, menu);
+//
+//        View view = menu.findItem(R.id.menu_switch).getActionView();
+//
+//        Switch actionBarSwitch = view.findViewById(R.id.switchForActionBar);
+//        actionBarSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+//        {
+//            for (HueLight light : manager.getLights()) {
+//                volleyService.changeRequest(
+//                        VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
+//                        HueProtocol.setLight(isChecked), Request.Method.PUT);
+//            }
+//        });
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)

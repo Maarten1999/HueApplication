@@ -69,7 +69,7 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
     public void OnItemClick(View view, int position)
     {
         Bridge bridge = bridges.get(position);
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), ViewPagerActivity.class);
         intent.putExtra("HUE_BRIDGE_OBJECT", bridges.get(position));
         startActivity(intent);
     }
