@@ -44,7 +44,6 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
 {
 
     private Bridge thisBridge;
-    //private VolleyService volleyService;
     private VolleyHelper volleyHelper;
     private boolean isWaitingForHandshake = false;
     private LightManager manager;
@@ -101,7 +100,8 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
 
         if (thisBridge.getUsername() == null) {
             isWaitingForHandshake = true;
-            VolleyService.getInstance(getContext(), this).changeRequest("http://" + thisBridge.getIP() + "/api", HueProtocol.getUsername("HueApplication"), Request.Method.POST);
+            volleyHelper.getUsername();
+//            VolleyService.getInstance(getContext(), this).changeRequest("http://" + thisBridge.getIP() + "/api", HueProtocol.getUsername("HueApplication"), Request.Method.POST);
         }
 
         RecyclerView recyclerView = view.findViewById(R.id.RecyclerViewLightsFragment);

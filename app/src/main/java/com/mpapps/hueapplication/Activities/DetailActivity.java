@@ -19,6 +19,7 @@ import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
@@ -36,19 +37,19 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
     private ColorPickerView colorPickerView;
     private float[] hsv = new float[3];
     private int lightId;
-    private VolleyService volleyService;
+    private VolleyHelper volleyHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_detail);
-
-        volleyService = VolleyService.getInstance(this, this);
-
+        
         Intent intent = getIntent();
         light = intent.getParcelableExtra("LAMP");
         thisBridge = intent.getParcelableExtra("BRIDGE");
+
+        volleyHelper = new VolleyHelper(this, this, thisBridge);
 
         lightId = light.getId();
 
@@ -60,8 +61,7 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
 
             Color.colorToHSV(color, hsv);
             if (fromUser)
-                volleyService.changeRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, lightId),
-                        HueProtocol.setLight(light.isState(), (int) (hsv[2] * 254f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 245)), Request.Method.PUT);
+                volleyHelper.setLight(lightId, light.isState(), (int) (hsv[2] * 254f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 245));
         });
     }
 
@@ -79,5 +79,13 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
     protected void onResume() {
         super.onResume();
 
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        volleyHelper = null;
+        VolleyService.Detach();
     }
 }
