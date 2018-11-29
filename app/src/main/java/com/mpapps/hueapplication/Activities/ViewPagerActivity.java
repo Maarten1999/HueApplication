@@ -1,5 +1,6 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -59,6 +60,7 @@ public class ViewPagerActivity extends FragmentActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item)
             {
+                //item.setIconTintList(getResources().getColorStateList(R.color.navigationbar_text));
                 switch (item.getItemId()) {
                     case R.id.action_lights:
                         mPager.setCurrentItem(0);

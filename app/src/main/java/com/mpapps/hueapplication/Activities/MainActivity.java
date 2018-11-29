@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     {
         swipeContainer.setRefreshing(false);
         manager.setLights(lights);
-        adapter.clear();
-        adapter.addAll(manager.getLights());
+//        adapter.clear();
+//        adapter.addAll(manager.getLights());
         adapter.notifyDataSetChanged();
     }
 
@@ -185,8 +185,8 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         thisBridge = savedInstanceState.getParcelable("BRIDGE");
         adapter = new RecyclerViewAdapter(this, thisBridge);
         manager.setLights(savedInstanceState.getParcelableArrayList("LIGHTS"));
-        adapter.clear();
-        adapter.addAll(manager.getLights());
+//        adapter.clear();
+//        adapter.addAll(manager.getLights());
         mListState = savedInstanceState.getParcelable("LIST_MANAGER");
         layoutManager.onRestoreInstanceState(mListState);
     }
@@ -199,5 +199,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         if (mListState != null)
             layoutManager.onRestoreInstanceState(mListState);
     }
+
+
 
 }

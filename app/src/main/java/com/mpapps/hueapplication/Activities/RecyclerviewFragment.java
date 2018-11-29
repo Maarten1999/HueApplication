@@ -30,6 +30,7 @@ import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.SQLite.DatabaseHandler;
 import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
@@ -43,7 +44,8 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
 {
 
     private Bridge thisBridge;
-    private VolleyService volleyService;
+    //private VolleyService volleyService;
+    private VolleyHelper volleyHelper;
     private boolean isWaitingForHandshake = false;
     private LightManager manager;
     private RecyclerViewAdapter adapter;
@@ -92,7 +94,8 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
     {
         super.onViewCreated(view, savedInstanceState);
 
-        volleyService = VolleyService.getInstance(getContext(), this);
+        //volleyService = VolleyService.getInstance(getContext(), this);
+        volleyHelper = new VolleyHelper(getContext(), this, thisBridge);
         manager = LightManager.getInstance();
         manager.setLights(new ArrayList<>());
 
@@ -113,9 +116,10 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
         mainSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             for (HueLight light : manager.getLights()) {
-            volleyService.changeRequest(
-                    VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
-                    HueProtocol.setLight(isChecked), Request.Method.PUT);
+                volleyHelper.turnLightOnOff(light.getId(), isChecked);
+//            volleyService.changeRequest(
+//                    VolleyService.getUrl(thisBridge, VolleyService.VolleyType.PUTLIGHTS, light.getId()),
+//                    HueProtocol.setLight(isChecked), Request.Method.PUT);
         }
         });
 
@@ -123,12 +127,9 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
         swipeContainer.setOnRefreshListener(() ->
                 {
                     if (isWaitingForHandshake)
-                        volleyService.changeRequest("http://" +
-                                        thisBridge.getIP() + "/api",
-                                HueProtocol.getUsername("HueApplication"),
-                                Request.Method.POST);
+                        volleyHelper.getUsername();
                     else
-                        GetLights();
+                        volleyHelper.getLightsRequest();
 
                     Handler mHandler = new Handler();
                     mHandler.postDelayed(() ->
@@ -140,7 +141,7 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
         );
 
         if (!isWaitingForHandshake)
-            GetLights();
+            volleyHelper.getLightsRequest();
     }
 
     @Override
@@ -195,7 +196,7 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
         }
         if (!succeeded)
             Toast.makeText(getContext(), "Request not succeeded", Toast.LENGTH_SHORT).show();
-        GetLights();
+        volleyHelper.getLightsRequest();
     }
 
     @Override
@@ -219,25 +220,24 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
         void onFragmentInteraction(Uri uri);
     }
 
-    private void GetLights()
-    {
-        volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
-    }
+//    private void GetLights()
+//    {
+//        volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
+//    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-        if (savedInstanceState != null) {
-
-            thisBridge = savedInstanceState.getParcelable("BRIDGE");
-            adapter = new RecyclerViewAdapter(getContext(), thisBridge);
-            manager.setLights(savedInstanceState.getParcelableArrayList("LIGHTS"));
-            mListState = savedInstanceState.getParcelable("LIST_MANAGER");
-            layoutManager.onRestoreInstanceState(mListState);
-        }
-    }
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+//    {
+//        super.onActivityCreated(savedInstanceState);
+//        if (savedInstanceState != null) {
+//
+//            thisBridge = savedInstanceState.getParcelable("BRIDGE");
+//            adapter = new RecyclerViewAdapter(getContext(), thisBridge);
+//            manager.setLights(savedInstanceState.getParcelableArrayList("LIGHTS"));
+//            mListState = savedInstanceState.getParcelable("LIST_MANAGER");
+//            layoutManager.onRestoreInstanceState(mListState);
+//        }
+//    }
 
 //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
@@ -259,25 +259,37 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
 //        super.onCreateOptionsMenu(menu, inflater);
 //    }
 
+//    @Override
+//    public void onSaveInstanceState(Bundle outState)
+//    {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putParcelable("BRIDGE", thisBridge);
+//        ArrayList<HueLight> tempLights = new ArrayList<>(manager.getLights());
+//        outState.putParcelableArrayList("LIGHTS", tempLights);
+//        mListState = layoutManager.onSaveInstanceState();
+//        outState.putParcelable("LIST_MANAGER", mListState);
+//    }
+
+//
+//    @Override
+//    public void onResume()
+//    {
+//        super.onResume();
+//
+//        if (mListState != null)
+//            layoutManager.onRestoreInstanceState(mListState);
+//    }
+
     @Override
-    public void onSaveInstanceState(Bundle outState)
+    public void onDestroy()
     {
-        super.onSaveInstanceState(outState);
+        VolleyService.Detach();
+        layoutManager = null;
+        mListState = null;
+        DatabaseHandler.Detach();
+        volleyHelper = null;
 
-        outState.putParcelable("BRIDGE", thisBridge);
-        ArrayList<HueLight> tempLights = new ArrayList<>(manager.getLights());
-        outState.putParcelableArrayList("LIGHTS", tempLights);
-        mListState = layoutManager.onSaveInstanceState();
-        outState.putParcelable("LIST_MANAGER", mListState);
-    }
-
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        if (mListState != null)
-            layoutManager.onRestoreInstanceState(mListState);
+        super.onDestroy();
     }
 }

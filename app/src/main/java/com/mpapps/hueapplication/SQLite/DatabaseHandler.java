@@ -20,6 +20,10 @@ public class DatabaseHandler extends SQLiteOpenHelper
         super(context, Util.DB_NAME, null, Util.DB_VERSION);
     }
 
+    public static void Detach(){
+        sInstance = null;
+    }
+
     public static DatabaseHandler getInstance(Context context){
         if (sInstance == null){
             sInstance = new DatabaseHandler(context);

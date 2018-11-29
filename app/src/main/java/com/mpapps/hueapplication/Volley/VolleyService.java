@@ -2,19 +2,15 @@ package com.mpapps.hueapplication.Volley;
 
 import android.content.Context;
 
-import android.graphics.Color;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.HueLight;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,13 +22,22 @@ public class VolleyService
     private static VolleyService sInstance = null;
     private RequestQueue requestQueue;
     private VolleyListener listener;
-    public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/3a6a380415175c7acbe40b95b25c104";
-    public static final String basicRequestUrlMaartenSchool = "http://145.49.21.167:80/api/93e934e1ac5531c48ebf7838af52e94";
+//    public static final String basicRequestUrlMaartenHome = "http://192.168.178.38:80/api/3a6a380415175c7acbe40b95b25c104";
+//    public static final String basicRequestUrlMaartenSchool = "http://145.49.21.167:80/api/93e934e1ac5531c48ebf7838af52e94";
 
 
     private VolleyService (Context context, VolleyListener listener){
         requestQueue = Volley.newRequestQueue(context);
         this.listener = listener;
+    }
+
+    private void DetachListener(){
+        requestQueue = null;
+        listener = null;
+    }
+    public static void Detach(){
+        //sInstance.DetachListener();
+        sInstance = null;
     }
 
     public static VolleyService getInstance(Context context, VolleyListener listener){

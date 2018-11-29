@@ -24,7 +24,7 @@
             android:name=".Activities.MainActivity"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".Activities.ViewPagerActivity"
-            android:configChanges="orientation|screenSize"></activity>
+            ></activity>
     </application>
 
 </manifest>
