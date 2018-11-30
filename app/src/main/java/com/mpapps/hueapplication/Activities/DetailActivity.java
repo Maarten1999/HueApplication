@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,9 +20,12 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
+import com.mpapps.hueapplication.Models.Group;
 import com.mpapps.hueapplication.Models.HueLight;
+import com.mpapps.hueapplication.Models.Schedule;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.Notifier;
 import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
@@ -33,7 +37,8 @@ import java.util.List;
 import top.defaults.colorpicker.ColorPickerPopup;
 import top.defaults.colorpicker.ColorPickerView;
 
-public class DetailActivity extends AppCompatActivity implements VolleyListener {
+public class DetailActivity extends AppCompatActivity implements Notifier
+{
 
     private Bridge thisBridge;
     private HueLight light;
@@ -55,7 +60,9 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
         Intent intent = getIntent();
         light = intent.getParcelableExtra("LAMP");
         thisBridge = intent.getParcelableExtra("BRIDGE");
-        volleyHelper = new VolleyHelper(this, this, thisBridge);
+
+        volleyHelper = VolleyHelper.getInstance(this, this, thisBridge);
+
         lightId = light.getId();
 
         manager = LightManager.getInstance();
@@ -77,7 +84,7 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
         });
 
         colorPickerView = findViewById(R.id.colorPicker);
-        float[] hsv = {light.getHue() / 182.04f, light.getBrightness() / 254f, light.getSaturation() / 254f};
+        float[] hsv = {(float) (light.getHue()) / 182.04f, (float)( light.getBrightness()) / 254f, (float)(light.getSaturation()) / 254f};
         colorPickerView.setInitialColor(Color.HSVToColor(hsv));
         colorPickerView.subscribe((color, fromUser) -> {
             Color.colorToHSV(color, hsv);
@@ -89,25 +96,28 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
     }
 
     @Override
-    public void GetLightsReceived(List<HueLight> lights) {
-
-    }
-
-    @Override
-    public void ChangeRequestReceived(JSONArray response) {
-
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onDestroy()
+    {
         volleyHelper = null;
         VolleyService.Detach();
+        super.onDestroy();
+    }
+
+    @Override
+    public void NotifyManagerDataChanged()
+    {
+
+    }
+
+    @Override
+    public void ChangeRequestReceived(JSONArray response)
+    {
+        volleyHelper.getLightsRequest();
     }
 }

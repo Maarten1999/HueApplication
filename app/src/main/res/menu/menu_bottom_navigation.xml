@@ -6,13 +6,11 @@
         android:icon="@drawable/hue_home_icon"
         android:title="Home"
         app:showAsAction="always|withText"
-        android:checkable="true"
-        android:checked="true"/>
+        android:checkable="true" />
     <item
         android:id="@+id/action_schedules"
         android:icon="@drawable/hue_schedule_icon"
         android:title="Schedules"
         app:showAsAction="always|withText"
-        android:checkable="true"
-        android:checked="false"/>
+        android:checkable="true" />
 </menu>

@@ -15,8 +15,11 @@ import android.widget.TextView;
 
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
+import com.mpapps.hueapplication.Models.Group;
 import com.mpapps.hueapplication.Models.HueLight;
+import com.mpapps.hueapplication.Models.Schedule;
 import com.mpapps.hueapplication.R;
+import com.mpapps.hueapplication.Volley.Notifier;
 import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 
@@ -24,7 +27,8 @@ import org.json.JSONArray;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements VolleyListener {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements Notifier
+{
     private LayoutInflater mInflater;
     private OnChangeListener mClickListener;
     private Context ctx;
@@ -39,7 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         manager = LightManager.getInstance();
         ctx = context;
         thisBridge = bridge;
-        volleyHelper = new VolleyHelper(ctx, this, bridge);
+        volleyHelper = VolleyHelper.getInstance(ctx, this, bridge);
     }
 
     @Override
@@ -73,9 +77,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return manager.getLights().size();
     }
 
+//    @Override
+//    public void GetLightsReceived(List<HueLight> lights) {
+//        manager.setLights(lights);
+//        notifyDataSetChanged();
+//    }
+//
+//    @Override
+//    public void GetSchedulesReceived(List<Schedule> schedules)
+//    {
+//
+//    }
+//
+//    @Override
+//    public void GetGroupsReceived(List<Group> groups)
+//    {
+//
+//    }
+
     @Override
-    public void GetLightsReceived(List<HueLight> lights) {
-        manager.setLights(lights);
+    public void NotifyManagerDataChanged()
+    {
         notifyDataSetChanged();
     }
 

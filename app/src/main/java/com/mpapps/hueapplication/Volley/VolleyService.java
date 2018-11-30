@@ -32,7 +32,6 @@ public class VolleyService
     }
 
     private void DetachListener(){
-        requestQueue = null;
         listener = null;
     }
     public static void Detach(){
@@ -60,29 +59,22 @@ public class VolleyService
         requestQueue.add(request);
     }
 
-    public void getRequest(String requestUrl, final JSONObject requestBody){
+    public void getRequest(String requestUrl, final JSONObject requestBody, VolleyGetType type){
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET, requestUrl, requestBody,
                 response ->
                 {
-                    List<HueLight> tempLights = new ArrayList<>();
-                    for (int i = 0; i < response.names().length(); i++) {
-                        try {
-                            int id = Integer.parseInt(response.names().getString(i));
-                            String name = response.getJSONObject(response.names().getString(i)).getString("name");
-                            JSONObject lightJson = response.getJSONObject(response.names().getString(i)).getJSONObject("state");
-                            boolean state = lightJson.getBoolean("on");
-                            int saturation = lightJson.getInt("sat");
-                            int brightness = lightJson.getInt("bri");
-                            int hue = lightJson.getInt("hue");
-
-                            HueLight light = new HueLight(id, name, state, brightness, hue, saturation);
-                            tempLights.add(light);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    switch (type) {
+                        case GROUPS:
+                            listener.GetGroupsReceived(HueProtocol.GroupsParse(response));
+                            break;
+                        case LIGHTS:
+                            listener.GetLightsReceived(HueProtocol.LightsParse(response));
+                            break;
+                        case SCHEDULES:
+                            listener.GetSchedulesReceived(HueProtocol.SchedulesParse(response));
+                            break;
                     }
-                    listener.GetLightsReceived(tempLights);
                 },
                 error -> Log.i("VolleyService", "Volley error")
         );
@@ -94,27 +86,10 @@ public class VolleyService
         requestQueue.cancelAll(request -> true);
     }
 
-    public static String getUrl(Bridge bridge, VolleyType type, int lightId){
-        String url = "http://" + bridge.getIP() + "/api";
-        switch (type) {
-            case GETLIGHTS:
-                return url + "/" + bridge.getUsername() + "/lights";
-            case PUTLIGHTS:
-                return url + "/" + bridge.getUsername() + "/lights/" + lightId + "/state";
-            case GETSCHEDULES:
-                return url + "/" + bridge.getUsername() + "/schedules";
-            case USERNAME:
-                return url;
-            default:
-                return url + "/" + bridge.getUsername() + "/lights";
-
-        }
-    }
-    public enum VolleyType{
-        GETLIGHTS,
-        PUTLIGHTS,
-        GETSCHEDULES,
-        USERNAME,
+    public enum VolleyGetType{
+        GROUPS,
+        LIGHTS,
+        SCHEDULES
     }
 }
 

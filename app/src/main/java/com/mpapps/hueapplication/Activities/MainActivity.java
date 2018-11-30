@@ -15,10 +15,13 @@ import com.android.volley.Request;
 import com.mpapps.hueapplication.Adapters.RecyclerViewAdapter;
 import com.mpapps.hueapplication.LightManager;
 import com.mpapps.hueapplication.Models.Bridge;
+import com.mpapps.hueapplication.Models.Group;
 import com.mpapps.hueapplication.Models.HueLight;
+import com.mpapps.hueapplication.Models.Schedule;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.SQLite.DatabaseHandler;
 import com.mpapps.hueapplication.Volley.HueProtocol;
+import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
@@ -97,7 +100,20 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void ChangeRequestReceived(JSONArray response) {
+    public void GetSchedulesReceived(List<Schedule> schedules)
+    {
+
+    }
+
+    @Override
+    public void GetGroupsReceived(List<Group> groups)
+    {
+
+    }
+
+    @Override
+    public void ChangeRequestReceived(JSONArray response)
+    {
         boolean succeeded = true;
         swipeContainer.setRefreshing(false);
         for (int i = 0; i < response.length(); i++) {
@@ -133,8 +149,9 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
         startActivity(intent);
     }
 
-    private void GetLights() {
-        volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
+    private void GetLights()
+    {
+        volleyService.getRequest(VolleyHelper.getUrl(thisBridge, VolleyHelper.VolleyType.GETLIGHTS, 0), null, VolleyService.VolleyGetType.LIGHTS);
     }
 
 //    @Override

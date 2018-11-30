@@ -46,8 +46,8 @@
         android:layout_alignParentBottom="true"
         android:background="#2f2f2f"
         app:itemBackground="@color/colorBasic"
-        app:itemTextColor="@color/navigationbar_text"
-        app:itemIconTint="@color/navigationbar_text"
+        app:itemIconTint="@color/nav_selector_color"
+        app:itemTextColor="@color/nav_selector_color"
         app:menu="@menu/menu_bottom_navigation"/>
 
 
