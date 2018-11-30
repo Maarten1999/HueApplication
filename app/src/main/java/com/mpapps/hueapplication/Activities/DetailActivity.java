@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -50,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements Notifier
     private TextView lampName;
     private View pickedColor;
     private LightManager manager;
+    private Button scheduleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,26 +67,23 @@ public class DetailActivity extends AppCompatActivity implements Notifier
 
         lightId = light.getId();
 
+        pickedColor = findViewById(R.id.detail_pickedcolor);
         manager = LightManager.getInstance();
 
         lampName = findViewById(R.id.detail_name);
         lampName.setText(light.getName());
 
-        pickedColor = findViewById(R.id.detail_pickedcolor);
-
 
         aSwitch = findViewById(R.id.detail_switch);
         aSwitch.setChecked(light.isState());
-        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                light.setState(isChecked);
-                volleyHelper.turnLightOnOff(lightId,isChecked);
-            }
+        aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            light.setState(isChecked);
+            volleyHelper.turnLightOnOff(lightId, isChecked);
         });
 
+
         colorPickerView = findViewById(R.id.colorPicker);
-        float[] hsv = {(float) (light.getHue()) / 182.04f, (float)( light.getBrightness()) / 254f, (float)(light.getSaturation()) / 254f};
+        float[] hsv = {light.getHue() / 182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
         colorPickerView.setInitialColor(Color.HSVToColor(hsv));
         colorPickerView.subscribe((color, fromUser) -> {
             Color.colorToHSV(color, hsv);
@@ -93,6 +92,12 @@ public class DetailActivity extends AppCompatActivity implements Notifier
                 pickedColor.setBackgroundColor(color);
             }
         });
+
+        scheduleButton = findViewById(R.id.detail_shedule_button);
+        scheduleButton.setOnClickListener(v -> {
+            //todo: schedule stuff
+        });
+
     }
 
     @Override
