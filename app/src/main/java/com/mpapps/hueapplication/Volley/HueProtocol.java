@@ -164,6 +164,8 @@ public class HueProtocol
     public static List<Schedule> SchedulesParse(JSONObject response){
         List<Schedule> schedules = new ArrayList<>();
         JSONArray namesArray = response.names();
+        if(namesArray == null)
+            return schedules;
         for (int i = 0; i < namesArray.length(); i++) {
             try{
                 int id = Integer.parseInt(response.names().getString(i));

@@ -72,7 +72,6 @@ public class SchedulesFragment extends Fragment implements Notifier, SchedulesAd
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_schedules, container, false);
     }
 
@@ -104,24 +103,6 @@ public class SchedulesFragment extends Fragment implements Notifier, SchedulesAd
 
         volleyHelper.getSchedulesRequest();
     }
-
-//    @Override
-//    public void GetLightsReceived(List<HueLight> lights)
-//    {
-//
-//    }
-//
-//    @Override
-//    public void GetSchedulesReceived(List<Schedule> schedules)
-//    {
-//
-//    }
-//
-//    @Override
-//    public void GetGroupsReceived(List<Group> groups)
-//    {
-//
-//    }
 
     @Override
     public void NotifyManagerDataChanged()
