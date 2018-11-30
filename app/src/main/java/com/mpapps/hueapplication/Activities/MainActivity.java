@@ -28,8 +28,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.OnChangeListener
-{
+public class MainActivity extends AppCompatActivity implements VolleyListener, RecyclerViewAdapter.OnChangeListener {
     private VolleyService volleyService;
     private LightManager manager;
     RecyclerViewAdapter adapter;
@@ -40,8 +39,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     private Parcelable mListState;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         volleyService = VolleyService.getInstance(this.getApplicationContext(), this);
@@ -90,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void GetLightsReceived(List<HueLight> lights)
-    {
+    public void GetLightsReceived(List<HueLight> lights) {
         swipeContainer.setRefreshing(false);
         manager.setLights(lights);
 //        adapter.clear();
@@ -100,8 +97,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void ChangeRequestReceived(JSONArray response)
-    {
+    public void ChangeRequestReceived(JSONArray response) {
         boolean succeeded = true;
         swipeContainer.setRefreshing(false);
         for (int i = 0; i < response.length(); i++) {
@@ -128,21 +124,16 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    public void onItemClick(View view, int position)
-    {
+    public void onItemClick(View view, int position) {
         List<HueLight> lights = manager.getLights();
 
-        if (lights.get(position).isState()) {
-            Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-            intent.putExtra("LAMP", lights.get(position));
-            intent.putExtra("BRIDGE", thisBridge);
-            startActivity(intent);
-        } else
-            Toast.makeText(this, "turn on the lamp first", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+        intent.putExtra("LAMP", lights.get(position));
+        intent.putExtra("BRIDGE", thisBridge);
+        startActivity(intent);
     }
 
-    private void GetLights()
-    {
+    private void GetLights() {
         volleyService.getRequest(VolleyService.getUrl(thisBridge, VolleyService.VolleyType.GETLIGHTS, 0), null);
     }
 
@@ -166,8 +157,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
 //    }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("BRIDGE", thisBridge);
@@ -178,8 +168,7 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState)
-    {
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         thisBridge = savedInstanceState.getParcelable("BRIDGE");
@@ -192,14 +181,12 @@ public class MainActivity extends AppCompatActivity implements VolleyListener, R
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
         if (mListState != null)
             layoutManager.onRestoreInstanceState(mListState);
     }
-
 
 
 }

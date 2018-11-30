@@ -204,13 +204,10 @@ public class RecyclerviewFragment extends Fragment implements VolleyListener, Re
     {
         List<HueLight> lights = manager.getLights();
 
-        if (lights.get(position).isState()) {
-            Intent intent = new Intent(getContext(), DetailActivity.class);
-            intent.putExtra("LAMP", lights.get(position));
-            intent.putExtra("BRIDGE", thisBridge);
-            startActivity(intent);
-        } else
-            Toast.makeText(getContext(), "Turn on the lamp first", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        intent.putExtra("LAMP", lights.get(position));
+        intent.putExtra("BRIDGE", thisBridge);
+        startActivity(intent);
 
     }
 

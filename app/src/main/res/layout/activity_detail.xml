@@ -5,9 +5,9 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#3c3c3c"
     android:orientation="vertical"
-    tools:context=".Activities.DetailActivity"
-    android:background="#3c3c3c">
+    tools:context=".Activities.DetailActivity">
 
     <top.defaults.colorpicker.ColorPickerView
         android:id="@+id/colorPicker"
@@ -18,5 +18,36 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </top.defaults.colorpicker.ColorPickerView>
+
+    <Switch
+        android:id="@+id/detail_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorPicker" />
+
+    <View
+        android:id="@+id/detail_pickedcolor"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorPicker" />
+
+    <TextView
+        android:id="@+id/detail_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorPicker" />
 
 </android.support.constraint.ConstraintLayout>
