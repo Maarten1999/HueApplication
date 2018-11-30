@@ -72,12 +72,12 @@ public class DetailActivity extends AppCompatActivity implements VolleyListener 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 light.setState(isChecked);
-                volleyHelper.turnLightOnOff(lightId,isChecked);
+                volleyHelper.turnLightOnOff(lightId, isChecked);
             }
         });
 
         colorPickerView = findViewById(R.id.colorPicker);
-        float[] hsv = {light.getHue() / 182.04f, light.getBrightness() / 254f, light.getSaturation() / 254f};
+        float[] hsv = {light.getHue() / 182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
         colorPickerView.setInitialColor(Color.HSVToColor(hsv));
         colorPickerView.subscribe((color, fromUser) -> {
             Color.colorToHSV(color, hsv);
