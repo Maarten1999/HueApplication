@@ -29,6 +29,9 @@ import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.LocalTime;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -48,6 +51,7 @@ public class ViewPagerActivity extends FragmentActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
+        JodaTimeAndroid.init(this);
 
         thisBridge = getIntent().getParcelableExtra("HUE_BRIDGE_OBJECT");
 

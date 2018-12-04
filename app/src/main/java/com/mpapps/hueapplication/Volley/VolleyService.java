@@ -53,6 +53,7 @@ public class VolleyService
                 response -> listener.ChangeRequestReceived(response),
                 error ->
                 {
+                    error.printStackTrace();
                     Log.i("VolleyService", "Volley error");
                 }
         );
@@ -76,7 +77,10 @@ public class VolleyService
                             break;
                     }
                 },
-                error -> Log.i("VolleyService", "Volley error")
+                error -> {
+                    error.printStackTrace();
+                    Log.i("VolleyService", "Volley error");
+                }
         );
 
         requestQueue.add(request);

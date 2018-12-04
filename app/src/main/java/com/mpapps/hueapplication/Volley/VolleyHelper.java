@@ -113,6 +113,16 @@ public class VolleyHelper implements VolleyListener
                 HueProtocol.addSchedule(name, time, address, isOn, brightness, hue, saturation), Request.Method.POST);
     }
 
+    public void addScheduleRequest(boolean isGroup, int id, String name, ScheduleTime time, boolean isOn){
+        String address;
+        if(isGroup)
+            address = getUrlWithoutIP(bridge, VolleyType.SETGROUPSTATE, id);
+        else
+            address = getUrlWithoutIP(bridge, VolleyType.PUTLIGHTS, id);
+        volleyService.changeRequest(getUrl(bridge, VolleyType.GETorADDSCHEDULES, 0),
+                HueProtocol.addSchedule(name, time, address, isOn), Request.Method.POST);
+    }
+
     public void deleteSchedule(int scheduleId){
         volleyService.changeRequest(getUrl(bridge, VolleyType.DELETESCHEDULE, scheduleId), null, Request.Method.DELETE);
 
@@ -144,7 +154,7 @@ public class VolleyHelper implements VolleyListener
 
     public static String getUrlWithoutIP(Bridge bridge, VolleyType type, int id){
         String url = getUrl(bridge, type, id);
-        return url.substring(url.lastIndexOf("/api") - 4);
+        return url.substring(url.lastIndexOf("/api"));
 
     }
 

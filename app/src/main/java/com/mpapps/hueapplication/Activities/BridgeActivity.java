@@ -53,8 +53,8 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
         database.addBridge(bridge);
         bridges.add(bridge);
         adapter.notifyItemInserted(bridges.size() - 1);
-        getSupportFragmentManager().popBackStack();
-
+        //getSupportFragmentManager().findFragmentByTag("FRAGMENT_ADD_BRIDGE").onDestroy();
+//        getSupportFragmentManager().popBackStack();
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         View view = getCurrentFocus();
@@ -79,8 +79,9 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
         Fragment fragment = fragmentManager.findFragmentById(R.id.bridgeactivity_bridge_fragment);
         if(fragment == null){
             BridgeFragment bridgeFragment = BridgeFragment.newInstance(this);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.bridgeactivity_bridge_fragment, bridgeFragment).addToBackStack(null).commit();
+            bridgeFragment.show(fragmentManager, "FRAGMENT_ADD_BRIDGE");
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.add(R.id.bridgeactivity_bridge_fragment, bridgeFragment).addToBackStack(null).commit();
         }
 
     }

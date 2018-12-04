@@ -123,6 +123,23 @@ public class HueProtocol
         return json;
     }
 
+    public static JSONObject addSchedule(String name, ScheduleTime time, String address, boolean isOn){
+        JSONObject json = new JSONObject();
+        JSONObject jsonCommand = new JSONObject();
+        try {
+            jsonCommand.put("address", address);
+            jsonCommand.put("method", "PUT");
+            //todo maybe body line is not possible
+            jsonCommand.put("body", HueProtocol.setLight(isOn));
+            json.put("name", name);
+            json.put("time", time.getTimeString());
+            json.put("command", jsonCommand);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     public static List<Group> GroupsParse(JSONObject response){
         List<Group> tempGroups = new ArrayList<>();
         for (int i = 0; i < response.names().length(); i++) {

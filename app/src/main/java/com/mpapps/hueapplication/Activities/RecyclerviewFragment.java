@@ -54,6 +54,7 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
     private SwipeRefreshLayout swipeContainer;
     private RecyclerView.LayoutManager layoutManager;
     private Parcelable mListState;
+    private Toast toast;
 
     private OnFragmentInteractionListener mListener;
 
@@ -95,6 +96,8 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
+        toast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
 
         //volleyService = VolleyService.getInstance(getContext(), this);
         volleyHelper = VolleyHelper.getInstance(getContext(),this, thisBridge);
@@ -138,7 +141,6 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
                     mHandler.postDelayed(() ->
                     {
                         swipeContainer.setRefreshing(false);
-                        //volleyService.emptyRequestQueue();
                     }, 5000);
                 }
         );
@@ -151,12 +153,6 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
     public void onAttach(Context context)
     {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -165,26 +161,6 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
         super.onDetach();
         mListener = null;
     }
-
-//    @Override
-//    public void GetLightsReceived(List<HueLight> lights)
-//    {
-//        swipeContainer.setRefreshing(false);
-//        manager.setLights(lights);
-//        adapter.notifyDataSetChanged();
-//    }
-//
-//    @Override
-//    public void GetSchedulesReceived(List<Schedule> schedules)
-//    {
-//
-//    }
-//
-//    @Override
-//    public void GetGroupsReceived(List<Group> groups)
-//    {
-//
-//    }
 
     @Override
     public void NotifyManagerDataChanged()
@@ -197,12 +173,16 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
     public void ChangeRequestReceived(JSONArray response)
     {
         boolean succeeded = true;
+        boolean isScheduleError = false;
         swipeContainer.setRefreshing(false);
         for (int i = 0; i < response.length(); i++) {
             try {
 
                 if (response.getJSONObject(i).getString("success") == null) {
                     succeeded = false;
+                    if(response.getJSONObject(i).getJSONObject("error").getString("description") != null)
+                        if(response.getJSONObject(i).getJSONObject("error").getString("description").contains("invalid value"))
+                            Toast.makeText(getContext(), "Scheduled time is not in the future", Toast.LENGTH_SHORT);
                 } else {
                     if (isWaitingForHandshake) {
                         thisBridge.setUsername(HueProtocol.UsernameParse(response));
@@ -216,8 +196,10 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
                 succeeded = false;
             }
         }
-        if (!succeeded)
-            Toast.makeText(getContext(), "Request not succeeded", Toast.LENGTH_SHORT).show();
+        if (!succeeded){
+            toast.setText("Request not succeeded");
+            toast.show();
+        }
         volleyHelper.getLightsRequest();
     }
 

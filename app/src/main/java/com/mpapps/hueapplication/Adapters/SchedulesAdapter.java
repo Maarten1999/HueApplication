@@ -13,9 +13,9 @@ import com.mpapps.hueapplication.Models.Schedule;
 import com.mpapps.hueapplication.Models.ScheduleTime;
 import com.mpapps.hueapplication.R;
 
-import java.sql.Time;
-import java.text.DateFormat;
-import java.time.DateTimeException;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 
 public class SchedulesAdapter extends RecyclerView.Adapter<SchedulesAdapter.ViewHolder>
 {
@@ -43,11 +43,16 @@ public class SchedulesAdapter extends RecyclerView.Adapter<SchedulesAdapter.View
         holder.nameTextView.setText(schedule.getName());
 
         ScheduleTime time = schedule.getLocalTime();
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DATE_FIELD);
-        String hours = time.getDate().getHours() + "00";
-        String minutes = time.getDate().getMinutes() + "00";
-        holder.timeTextView.setText(hours.substring(0, 2) + ":" + minutes.substring(0,2));
-        holder.dateTextView.setText(dateFormat.format(time.getDate()));
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'hh:mm:ss");
+
+        String hours = String.valueOf(time.getDateTime().getHourOfDay());
+        String minutes = String.valueOf(time.getDateTime().getMinuteOfHour());
+        if(time.getDateTime().getHourOfDay() < 9)
+            hours = "0" + hours;
+        if(time.getDateTime().getMinuteOfHour() < 9)
+            minutes = "0" + minutes;
+        holder.timeTextView.setText(hours + ":" + minutes);
+        holder.dateTextView.setText(formatter.print(time.getDateTime()).split("T")[0]);
     }
 
     @Override

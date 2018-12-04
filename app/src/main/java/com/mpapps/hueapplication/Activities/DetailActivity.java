@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.mpapps.hueapplication.LightManager;
@@ -24,6 +28,7 @@ import com.mpapps.hueapplication.Models.Bridge;
 import com.mpapps.hueapplication.Models.Group;
 import com.mpapps.hueapplication.Models.HueLight;
 import com.mpapps.hueapplication.Models.Schedule;
+import com.mpapps.hueapplication.Models.ScheduleTime;
 import com.mpapps.hueapplication.R;
 import com.mpapps.hueapplication.Volley.HueProtocol;
 import com.mpapps.hueapplication.Volley.Notifier;
@@ -31,6 +36,7 @@ import com.mpapps.hueapplication.Volley.VolleyHelper;
 import com.mpapps.hueapplication.Volley.VolleyListener;
 import com.mpapps.hueapplication.Volley.VolleyService;
 
+import org.joda.time.LocalDate;
 import org.json.JSONArray;
 
 import java.util.List;
@@ -38,7 +44,7 @@ import java.util.List;
 import top.defaults.colorpicker.ColorPickerPopup;
 import top.defaults.colorpicker.ColorPickerView;
 
-public class DetailActivity extends AppCompatActivity implements Notifier
+public class DetailActivity extends AppCompatActivity implements Notifier, ScheduleFragment.OnFragmentInteractionListener
 {
 
     private Bridge thisBridge;
@@ -52,6 +58,7 @@ public class DetailActivity extends AppCompatActivity implements Notifier
     private View pickedColor;
     private LightManager manager;
     private Button scheduleButton;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +79,7 @@ public class DetailActivity extends AppCompatActivity implements Notifier
 
         lampName = findViewById(R.id.detail_name);
         lampName.setText(light.getName());
-
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         aSwitch = findViewById(R.id.detail_switch);
         aSwitch.setChecked(light.isState());
@@ -85,17 +92,26 @@ public class DetailActivity extends AppCompatActivity implements Notifier
         colorPickerView = findViewById(R.id.colorPicker);
         float[] hsv = {light.getHue() / 182.04f, light.getSaturation() / 254f, light.getBrightness() / 254f};
         colorPickerView.setInitialColor(Color.HSVToColor(hsv));
+        pickedColor.setBackgroundColor(Color.HSVToColor(hsv));
         colorPickerView.subscribe((color, fromUser) -> {
             Color.colorToHSV(color, hsv);
-            if (fromUser) {
+            if (fromUser && aSwitch.isChecked()) {
                 volleyHelper.setLight(lightId, light.isState(), (int) (hsv[1] * 254.0f), (int) (hsv[0] * 182.04f), (int) (hsv[2] * 254.0f));
                 pickedColor.setBackgroundColor(color);
+            }else if(!aSwitch.isChecked()){
+                toast.setText("Turn the light on to change color");
+                toast.show();
             }
         });
 
         scheduleButton = findViewById(R.id.detail_shedule_button);
         scheduleButton.setOnClickListener(v -> {
-            //todo: schedule stuff
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment fragment = fragmentManager.findFragmentById(R.id.detailedactivity_schedule_fragment);
+            if(fragment == null){
+                ScheduleFragment bridgeFragment = ScheduleFragment.newInstance();
+                bridgeFragment.show(fragmentManager, "dialog");
+            }
         });
 
     }
@@ -123,6 +139,13 @@ public class DetailActivity extends AppCompatActivity implements Notifier
     @Override
     public void ChangeRequestReceived(JSONArray response)
     {
-        volleyHelper.getLightsRequest();
+        //volleyHelper.getLightsRequest();
+    }
+
+    @Override
+    public void onFragmentInteraction(String name, int hour, int minute, boolean isOn, LocalDate scheduleDate)
+    {
+        ScheduleTime time = new ScheduleTime(hour, minute, scheduleDate);
+        volleyHelper.addScheduleRequest(false, lightId, name, time, isOn);
     }
 }

@@ -1,36 +1,37 @@
 package com.mpapps.hueapplication.Models;
 
 import android.util.Log;
-
-import java.sql.Time;
-import java.text.DateFormat;
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 
 public class ScheduleTime
 {
     private String timeString;
-    private Date date;
+    //private Date date;
+    private DateTime dateTime;
 
     public ScheduleTime(String timeString)
     {
         this.timeString = timeString;
         String[] dateAndTime = timeString.split("T");
-
-        Time time = Time.valueOf(dateAndTime[1]);
-        String[] date = dateAndTime[0].split("-");
-        Date tempDate = new Date();
-        tempDate.setTime(time.getTime());
-        Log.i("HueProtocol", date[0] + "-" + date[1] + "-" + date[2]);
-        int year = Integer.parseInt(date[0]);
-        int month = Integer.parseInt(date[1]);
-        int day = Integer.parseInt(date[2]);
-        tempDate.setDate(day);
-        tempDate.setMonth(month);
-        tempDate.setYear(year);
-        this.date = tempDate;
+        String timeString2 = dateAndTime[0] + " " + dateAndTime[1];
+        Log.i("ScheduleTime", timeString2);
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss";
+        dateTime  = DateTime.parse(timeString, DateTimeFormat.forPattern(pattern));
+        Log.i("ScheduleTime1", dateTime.toString("yyyy-MM-dd'T'HH:mm:ss"));
     }
 
+    public ScheduleTime(int hour, int minute, LocalDate scheduleDate){
 
+        dateTime = new DateTime()
+                .withTime(hour, minute, 0,0)
+                .withDate(scheduleDate);
+        String tempTimeString = dateTime.toString("yyyy-MM-dd HH:mm:ss");
+        String[] dateAndTime = tempTimeString.split(" ");
+        timeString = dateAndTime[0] + "T" + dateAndTime[1];
+        Log.i("ScheduleTime", timeString);
+    }
     public String getTimeString()
     {
         return timeString;
@@ -41,13 +42,13 @@ public class ScheduleTime
         this.timeString = timeString;
     }
 
-    public Date getDate()
+    public DateTime getDateTime()
     {
-        return date;
+        return dateTime;
     }
 
-    public void setDate(Date date)
+    public void setDateTime(DateTime dateTime)
     {
-        this.date = date;
+        this.dateTime = dateTime;
     }
 }
