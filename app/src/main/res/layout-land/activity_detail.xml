@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3c3c3c"
+    android:orientation="vertical"
+    tools:context=".Activities.DetailActivity">
+
+    <top.defaults.colorpicker.ColorPickerView
+        android:id="@+id/colorPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </top.defaults.colorpicker.ColorPickerView>
+
+    <Switch
+        android:id="@+id/detail_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/colorPicker"
+        app:layout_constraintTop_toBottomOf="@+id/detail_pickedcolor" />
+
+    <View
+        android:id="@+id/detail_pickedcolor"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/colorPicker"
+        app:layout_constraintTop_toBottomOf="@+id/detail_name" />
+
+    <TextView
+        android:id="@+id/detail_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/colorPicker"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/detail_shedule_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="add schedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/colorPicker"
+        app:layout_constraintTop_toBottomOf="@+id/detail_switch" />
+
+</android.support.constraint.ConstraintLayout>

@@ -96,7 +96,7 @@ public class DetailActivity extends AppCompatActivity implements Notifier, Sched
         colorPickerView.subscribe((color, fromUser) -> {
             Color.colorToHSV(color, hsv);
             if (fromUser && aSwitch.isChecked()) {
-                volleyHelper.setLight(lightId, light.isState(), (int) (hsv[1] * 254.0f), (int) (hsv[0] * 182.04f), (int) (hsv[2] * 254.0f));
+                volleyHelper.setLight(lightId, light.isState(), (int) (hsv[2] * 254.0f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 254.0f));
                 pickedColor.setBackgroundColor(color);
             }else if(!aSwitch.isChecked()){
                 toast.setText("Turn the light on to change color");
