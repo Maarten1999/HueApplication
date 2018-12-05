@@ -4,13 +4,13 @@
     <item
         android:id="@+id/action_lights"
         android:icon="@drawable/hue_home_icon"
-        android:title="Home"
+        android:title="@string/menu_item_home"
         app:showAsAction="always|withText"
         android:checkable="true" />
     <item
         android:id="@+id/action_schedules"
         android:icon="@drawable/hue_schedule_icon"
-        android:title="Schedules"
+        android:title="@string/header_schedules"
         app:showAsAction="always|withText"
         android:checkable="true" />
 </menu>

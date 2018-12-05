@@ -1,6 +1,21 @@
 <resources>
-    <string name="app_name">HueApplication</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Phillips Hue</string>
+    <string name="bridges">Bridges</string>
+    <string name="bridge">Bridge</string>
+    <string name="ip_address">IP-address:</string>
+    <string name="bridge_name">Name:</string>
+    <string name="text_bridge_add_button">Add</string>
+    <string name="text_push_bridge_link">Press the push-link button on the Hue bridge you want to connect to.</string>
+    <string name="header_lights">Lights</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_on_off">On/Off</string>
+    <string name="header_schedules">Schedules</string>
+    <string name="menu_item_home">Home</string>
+    <string name="toast_text_turn_light_on">Turn the light on to change color</string>
+    <string name="toast_text_request_not_succeeded">Request not succeeded</string>
+    <string name="toast_text_paired_brige">Paired with Bridge</string>
+    <string name="toast_text_invalid_time">Scheduled time is not in the future</string>
+    <string name="toast_text_schedule_tomorrow">Schedule set for tomorrow at:</string>
+    <string name="toast_text_schedule_today">Schedule set for today at:</string>
+    <string name="button_add_schedule">Add schedule</string>
 </resources>

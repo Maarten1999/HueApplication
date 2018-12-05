@@ -27,7 +27,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Lights"
+                    android:text="@string/header_lights"
                     android:textColor="@android:color/white"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -55,8 +55,5 @@
                 android:layout_height="match_parent"
                 android:background="#3c3c3c"/>
         </LinearLayout>
-
-
-
     </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.constraint.ConstraintLayout>

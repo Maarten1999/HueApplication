@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Phillips Hue</string>
+    <string name="bridges">Bruggen</string>
+    <string name="bridge">Brug</string>
+    <string name="ip_address">"IP-adres: "</string>
+    <string name="bridge_name">Naam:</string>
+    <string name="text_bridge_add_button">Voeg Toe</string>
+    <string name="text_push_bridge_link">Druk op de link knop van the Hue brug om te verbinden.</string>
+    <string name="header_lights">Lichten</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_on_off">Aan/Uit</string>
+    <string name="header_schedules">Planning</string>
+    <string name="menu_item_home">Hoofdmenu</string>
+    <string name="toast_text_turn_light_on">Zet het licht aan om de kleur te veranderen.</string>
+    <string name="toast_text_request_not_succeeded">Aanvraag mislukt.</string>
+    <string name="toast_text_paired_brige">Verbonden met Hue brug.</string>
+    <string name="toast_text_invalid_time">Geplande tijd is niet in de toekomst.</string>
+    <string name="toast_text_schedule_tomorrow">"Gepland voor morgen om: "</string>
+    <string name="toast_text_schedule_today">"Gepland voor vandaag om: "</string>
+    <string name="button_add_schedule">Plan tijd</string>
+</resources>

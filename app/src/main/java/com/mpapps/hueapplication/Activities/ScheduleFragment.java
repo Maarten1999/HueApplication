@@ -77,16 +77,16 @@ public class ScheduleFragment extends DialogFragment
             Log.i("ScheduleFragment", minute + ":" + DateTime.now().getMinuteOfHour() + "");
             if(hour >= DateTime.now().getHourOfDay()){
                 if(minute > DateTime.now().getMinuteOfHour()){
-                    Toast.makeText(getContext(), "Schedule set for today at: " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.toast_text_schedule_today) + hour + ":" + minute, Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(getContext(), "Schedule set for tomorrow at: " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.toast_text_schedule_tomorrow) + hour + ":" + minute, Toast.LENGTH_SHORT).show();
                     isToday = false;
                 }
             }
             else {
                 isToday = false;
-                Toast.makeText(getContext(), "Schedule set for tomorrow at: " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.toast_text_schedule_tomorrow) + hour + ":" + minute, Toast.LENGTH_SHORT).show();
             }
 
             LocalDate date = LocalDate.now();

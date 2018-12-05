@@ -53,8 +53,6 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
         database.addBridge(bridge);
         bridges.add(bridge);
         adapter.notifyItemInserted(bridges.size() - 1);
-        //getSupportFragmentManager().findFragmentByTag("FRAGMENT_ADD_BRIDGE").onDestroy();
-//        getSupportFragmentManager().popBackStack();
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         View view = getCurrentFocus();
@@ -68,7 +66,6 @@ public class BridgeActivity extends AppCompatActivity implements BridgeFragment.
     @Override
     public void OnItemClick(View view, int position)
     {
-        Bridge bridge = bridges.get(position);
         Intent intent = new Intent(getApplicationContext(), ViewPagerActivity.class);
         intent.putExtra("HUE_BRIDGE_OBJECT", bridges.get(position));
         startActivity(intent);

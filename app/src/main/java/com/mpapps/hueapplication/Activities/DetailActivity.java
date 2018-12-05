@@ -98,8 +98,8 @@ public class DetailActivity extends AppCompatActivity implements Notifier, Sched
             if (fromUser && aSwitch.isChecked()) {
                 volleyHelper.setLight(lightId, light.isState(), (int) (hsv[2] * 254.0f), (int) (hsv[0] * 182.04f), (int) (hsv[1] * 254.0f));
                 pickedColor.setBackgroundColor(color);
-            }else if(!aSwitch.isChecked()){
-                toast.setText("Turn the light on to change color");
+            }else if(fromUser && !aSwitch.isChecked()){
+                toast.setText(R.string.toast_text_turn_light_on);
                 toast.show();
             }
         });

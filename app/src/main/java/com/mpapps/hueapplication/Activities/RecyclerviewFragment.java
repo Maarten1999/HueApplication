@@ -182,13 +182,13 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
                     succeeded = false;
                     if(response.getJSONObject(i).getJSONObject("error").getString("description") != null)
                         if(response.getJSONObject(i).getJSONObject("error").getString("description").contains("invalid value"))
-                            Toast.makeText(getContext(), "Scheduled time is not in the future", Toast.LENGTH_SHORT);
+                            Toast.makeText(getContext(), R.string.toast_text_invalid_time, Toast.LENGTH_SHORT);
                 } else {
                     if (isWaitingForHandshake) {
                         thisBridge.setUsername(HueProtocol.UsernameParse(response));
                         DatabaseHandler.getInstance(getContext()).updateBridge(thisBridge);
                         isWaitingForHandshake = false;
-                        Toast.makeText(getContext(), "Paired with Bridge", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.toast_text_paired_brige, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -197,7 +197,7 @@ public class RecyclerviewFragment extends Fragment implements Notifier, Recycler
             }
         }
         if (!succeeded){
-            toast.setText("Request not succeeded");
+            toast.setText(R.string.toast_text_request_not_succeeded);
             toast.show();
         }
         volleyHelper.getLightsRequest();
