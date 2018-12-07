@@ -139,7 +139,7 @@ public class VolleyHelper implements VolleyListener
             case DELETESCHEDULE:
                 return url + "/" + bridge.getUsername() + "/schedules" + id;
             case GETorADDGROUPS:
-                return url + "/" + bridge.getUsername() + "/groups";
+                return url + "/" + bridge.getUsername();// + "/groups"
             case EDITGROUP:
                 return url + "/" + bridge.getUsername() + "/groups/" + id;
             case SETGROUPSTATE:
@@ -176,6 +176,7 @@ public class VolleyHelper implements VolleyListener
     public void GetGroupsReceived(List<Group> groups)
     {
         LightManager.getInstance().setGroups(groups);
+        listener.NotifyManagerDataChanged();
     }
 
     @Override

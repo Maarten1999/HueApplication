@@ -1,5 +1,6 @@
 package com.mpapps.hueapplication.Activities;
 
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,7 +41,7 @@ import java.util.List;
 public class ViewPagerActivity extends FragmentActivity
 {
 
-    private static final int NUM_PAGES = 2;
+    private static final int NUM_PAGES = 3;
     private ViewPager mPager;
     private TabLayout tabLayout;
     private PagerAdapter mPagerAdapter;
@@ -66,15 +67,24 @@ public class ViewPagerActivity extends FragmentActivity
                 case R.id.action_lights:
                     mPager.setCurrentItem(0);
                     break;
-                case R.id.action_schedules:
+                case R.id.action_groups:
                     mPager.setCurrentItem(1);
+                    break;
+                case R.id.action_schedules:
+                    mPager.setCurrentItem(2);
                     break;
             }
             return false;
         });
         bottomNavigationView.setSelectedItemId(R.id.action_lights);
 
+        SharedPreferences prefs = getSharedPreferences("ViewPagerActivity", MODE_PRIVATE);
+        int page = prefs.getInt("PAGENUMBER", 0);
+        mPager.setCurrentItem(page);
+
         LightManager.getInstance().getLights().clear();
+        LightManager.getInstance().getGroups().clear();
+        LightManager.getInstance().getSchedules().clear();
 
         }
 
@@ -89,11 +99,11 @@ public class ViewPagerActivity extends FragmentActivity
             super(fm);
             fragments = new ArrayList<>();
             fragments.add(RecyclerviewFragment.newInstance(thisBridge));
+            fragments.add(GroupFragment.newInstance(thisBridge));
             fragments.add(SchedulesFragment.newInstance(thisBridge));
-            //fragments.add(SchedulesFragment.newInstance(thisBridge));
             listTitles = new ArrayList<>();
             listTitles.add("Lights");
-//            listTitles.add("Groups");
+            listTitles.add("Groups");
             listTitles.add("Schedules");
         }
 
@@ -117,5 +127,33 @@ public class ViewPagerActivity extends FragmentActivity
         }
 
 
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("ViewPagerActivity", MODE_PRIVATE);
+        int page = prefs.getInt("PAGENUMBER", 0);
+        mPager.setCurrentItem(page);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        SharedPreferences.Editor editor = getSharedPreferences("ViewPagerActivity", MODE_PRIVATE).edit();
+        editor.putInt("PAGENUMBER", mPager.getCurrentItem());
+        editor.apply();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        SharedPreferences.Editor editor = getSharedPreferences("ViewPagerActivity", MODE_PRIVATE).edit();
+        editor.putInt("PAGENUMBER", mPager.getCurrentItem());
+        editor.apply();
     }
 }

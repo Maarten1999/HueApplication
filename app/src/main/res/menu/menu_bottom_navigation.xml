@@ -8,6 +8,12 @@
         app:showAsAction="always|withText"
         android:checkable="true" />
     <item
+        android:id="@+id/action_groups"
+        android:icon="@drawable/hue_lightgroup"
+        android:title="@string/menu_groups"
+        app:showAsAction="always|withText"
+        android:checkable="true" />
+    <item
         android:id="@+id/action_schedules"
         android:icon="@drawable/hue_schedule_icon"
         android:title="@string/header_schedules"

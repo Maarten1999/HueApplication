@@ -142,12 +142,20 @@ public class HueProtocol
 
     public static List<Group> GroupsParse(JSONObject response){
         List<Group> tempGroups = new ArrayList<>();
+        try {
+            response = response.getJSONObject("groups");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < response.names().length(); i++) {
             try{
                 int id = Integer.parseInt(response.names().getString(i));
                 String name = response.getJSONObject(response.names().getString(i)).getString("name");
-                JSONObject lightJson = response.getJSONObject(response.names().getString(i)).getJSONObject("action");
-                HueLight groupState = LightParse(lightJson);
+                HueLight groupState = null;
+                if(!response.getJSONObject(response.names().getString(i)).isNull("action")) {
+                    JSONObject lightJson = response.getJSONObject(response.names().getString(i)).getJSONObject("action");
+                    groupState = LightParse(lightJson);
+                }
                 JSONArray lightIds = response.getJSONObject(response.names().getString(i)).getJSONArray("lights");
                 int[] lights = new int[lightIds.length()];
                 for (int j = 0; j < lightIds.length(); j++) {

@@ -19,4 +19,5 @@
     <string name="toast_text_schedule_tomorrow">"Gepland voor morgen om: "</string>
     <string name="toast_text_schedule_today">"Gepland voor vandaag om: "</string>
     <string name="button_add_schedule">Plan tijd</string>
+    <string name="menu_groups">Groepen</string>
 </resources>
